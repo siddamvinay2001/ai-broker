@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
-import { embed, getBedrockClient, MODEL_SMART, toPgVector } from "@/lib/bedrock";
+import { getBedrockClient, MODEL_SMART } from "@/lib/bedrock";
 import { extractIntent } from "@/lib/intent";
-import { retrieveCommunities, retrieveProperties, type RetrievedProperty } from "@/lib/retrieval";
+import { retrieveCommunities, retrievePropertiesWithFallback, type RetrievedProperty } from "@/lib/retrieval";
 import { computeInvestment, computePaymentSchedule } from "@/lib/investment";
 import { rankBrokers, type BrokerProfile } from "@/lib/brokers";
 import type { BuyerIntent } from "@/lib/types/intent";
@@ -57,23 +57,17 @@ export async function POST(req: NextRequest) {
         const intent: BuyerIntent = await extractIntent(query);
         send({ type: "intent", intent });
 
-        // Vector search is an enhancement, not a dependency. If embeddings are
-        // unavailable the hard filters still bind and we return correct results.
-        let queryVector: string | null = null;
-        try {
-          queryVector = toPgVector(await embed(query));
-        } catch (err) {
-          console.error("Embedding unavailable, falling back to filtered search:", err);
-        }
-
-        const [rawProperties, communities] = await Promise.all([
-          retrieveProperties(intent, queryVector, 6),
-          retrieveCommunities(queryVector, 3),
+        // The inventory is small enough to filter in SQL and hand the whole
+        // surviving set to the model in one prompt. The vector columns stay in
+        // the schema as the path to scale, but nothing depends on them yet.
+        const [search, communities] = await Promise.all([
+          retrievePropertiesWithFallback(intent, null, 6),
+          retrieveCommunities(null, 3),
         ]);
-        const properties = rawProperties.map(withFinancials);
+        const properties = search.properties.map(withFinancials);
 
         send({ type: "communities", communities });
-        send({ type: "properties", properties });
+        send({ type: "properties", properties, relaxations: search.relaxations });
 
         const brokerRows = await prisma.broker.findMany({ where: { deletedAt: null } });
         const ranked = rankBrokers(
@@ -90,7 +84,7 @@ export async function POST(req: NextRequest) {
         // A narrative failure must not cost the visitor their results or us
         // the lead record, so it is contained rather than allowed to bubble.
         try {
-          await streamNarrative({ query, intent, properties, communities, send });
+          await streamNarrative({ query, intent, properties, communities, relaxations: search.relaxations, send });
         } catch (err) {
           console.error("Narrative generation failed:", err);
           send({ type: "narrative_unavailable" });
@@ -130,10 +124,11 @@ type NarrativeArgs = {
   intent: BuyerIntent;
   properties: ReturnType<typeof withFinancials>[];
   communities: Awaited<ReturnType<typeof retrieveCommunities>>;
+  relaxations: string[];
   send: (event: unknown) => void;
 };
 
-async function streamNarrative({ query, intent, properties, communities, send }: NarrativeArgs) {
+async function streamNarrative({ query, intent, properties, communities, relaxations, send }: NarrativeArgs) {
   if (properties.length === 0) {
     send({ type: "narrative_delta", text: "Nothing in our current inventory matches that brief. Widen the budget or the area and we will look again." });
     return;
@@ -186,6 +181,9 @@ async function streamNarrative({ query, intent, properties, communities, send }:
           `Structured reading of that brief: ${JSON.stringify(intent)}`,
           `Matched communities: ${JSON.stringify(communities.map((c) => ({ name: c.name, avgGrossYield: c.avgGrossYield, character: c.lifestyleTags })))}`,
           `Matched properties with computed financials: ${JSON.stringify(facts)}`,
+          relaxations.length
+            ? `Nothing matched the brief exactly, so we ${relaxations.join(" and ")}. Say so plainly in your first sentence.`
+            : "",
           "",
           "Explain why these are the right matches for this buyer.",
         ].join("\n"),

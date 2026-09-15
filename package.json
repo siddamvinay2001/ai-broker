@@ -10,7 +10,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "embed": "tsx prisma/embed.ts"
+    "doctor": "tsx src/lib/__tests__/bedrock.doctor.ts"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.33.5",

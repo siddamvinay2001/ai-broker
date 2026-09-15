@@ -153,11 +153,32 @@ export async function retrieveCommunities(
   `;
 }
 
-/// True once the embedding backfill has run. The API uses this to decide
-/// whether to attempt vector search at all.
-export async function embeddingsReady(): Promise<boolean> {
-  const [row] = await prisma.$queryRaw<{ missing: bigint }[]>`
-    SELECT COUNT(*) AS missing FROM "property" WHERE "embedding" IS NULL
-  `;
-  return Number(row?.missing ?? 1) === 0;
+/// A brief that matches nothing is a dead end for the visitor, so we relax the
+/// softest constraints in order and say what we dropped. Budget is relaxed
+/// last and never removed - showing someone a home they cannot afford is worse
+/// than showing them nothing.
+export type RelaxedSearch = {
+  properties: RetrievedProperty[];
+  relaxations: string[];
+};
+
+export async function retrievePropertiesWithFallback(
+  intent: BuyerIntent,
+  queryVector: string | null,
+  limit = 6,
+): Promise<RelaxedSearch> {
+  const attempts: { intent: BuyerIntent; note: string | null }[] = [
+    { intent, note: null },
+    { intent: { ...intent, propertyTypes: [] }, note: "widened the property type" },
+    { intent: { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null }, note: "widened the bedroom count" },
+    { intent: { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null, listingType: null }, note: "looked at both sale and rental listings" },
+  ];
+
+  const relaxations: string[] = [];
+  for (const attempt of attempts) {
+    if (attempt.note) relaxations.push(attempt.note);
+    const properties = await retrieveProperties(attempt.intent, queryVector, limit);
+    if (properties.length > 0) return { properties, relaxations };
+  }
+  return { properties: [], relaxations };
 }
