@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
-import { getBedrockClient, MODEL_SMART } from "@/lib/bedrock";
 import { extractIntent } from "@/lib/intent";
+import { MODEL_SMART, streamText } from "@/lib/llm";
 import { retrieveCommunities, retrievePropertiesWithFallback, type RetrievedProperty } from "@/lib/retrieval";
 import { computeInvestment, computePaymentSchedule } from "@/lib/investment";
 import { rankBrokers, type BrokerProfile } from "@/lib/brokers";
@@ -54,7 +54,12 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
 
       try {
-        const intent: BuyerIntent = await extractIntent(query);
+        // Community names let the rule-based fallback resolve "the Palm" or
+        // "JVC" to real inventory when the model is unavailable.
+        const knownCommunities = await prisma.community.findMany({
+          select: { slug: true, name: true },
+        });
+        const intent: BuyerIntent = await extractIntent(query, knownCommunities);
         send({ type: "intent", intent });
 
         // The inventory is small enough to filter in SQL and hand the whole
@@ -84,7 +89,7 @@ export async function POST(req: NextRequest) {
         // A narrative failure must not cost the visitor their results or us
         // the lead record, so it is contained rather than allowed to bubble.
         try {
-          await streamNarrative({ query, intent, properties, communities, relaxations: search.relaxations, send });
+          await streamNarrative({ query, intent, properties, communities, relaxations: search.relaxations, exactCount: search.exactCount, send });
         } catch (err) {
           console.error("Narrative generation failed:", err);
           send({ type: "narrative_unavailable" });
@@ -125,10 +130,11 @@ type NarrativeArgs = {
   properties: ReturnType<typeof withFinancials>[];
   communities: Awaited<ReturnType<typeof retrieveCommunities>>;
   relaxations: string[];
+  exactCount: number;
   send: (event: unknown) => void;
 };
 
-async function streamNarrative({ query, intent, properties, communities, relaxations, send }: NarrativeArgs) {
+async function streamNarrative({ query, intent, properties, communities, relaxations, exactCount, send }: NarrativeArgs) {
   if (properties.length === 0) {
     send({ type: "narrative_delta", text: "Nothing in our current inventory matches that brief. Widen the budget or the area and we will look again." });
     return;
@@ -167,33 +173,21 @@ async function streamNarrative({ query, intent, properties, communities, relaxat
     "- 2-3 short paragraphs, no headings, no bullet points, no markdown.",
   ].join("\n");
 
-  const client = getBedrockClient();
-  const stream = client.messages.stream({
-    model: MODEL_SMART,
-    max_tokens: 1400,
-    output_config: { effort: "low" },
-    system,
-    messages: [
-      {
-        role: "user",
-        content: [
-          `Buyer's brief, verbatim: "${query}"`,
-          `Structured reading of that brief: ${JSON.stringify(intent)}`,
-          `Matched communities: ${JSON.stringify(communities.map((c) => ({ name: c.name, avgGrossYield: c.avgGrossYield, character: c.lifestyleTags })))}`,
-          `Matched properties with computed financials: ${JSON.stringify(facts)}`,
-          relaxations.length
-            ? `Nothing matched the brief exactly, so we ${relaxations.join(" and ")}. Say so plainly in your first sentence.`
-            : "",
-          "",
-          "Explain why these are the right matches for this buyer.",
-        ].join("\n"),
-      },
-    ],
-  });
+  const user = [
+    `Buyer's brief, verbatim: "${query}"`,
+    `Structured reading of that brief: ${JSON.stringify(intent)}`,
+    `Matched communities: ${JSON.stringify(communities.map((c) => ({ name: c.name, avgGrossYield: c.avgGrossYield, character: c.lifestyleTags })))}`,
+    `Matched properties with computed financials: ${JSON.stringify(facts)}`,
+    relaxations.length
+      ? exactCount > 0
+        ? `${exactCount} of these match the brief exactly and are listed first. To give the buyer more to compare we also ${relaxations.join(" and ")}. Lead with the exact matches; introduce the rest as alternatives worth a look.`
+        : `Nothing matched the brief exactly, so we ${relaxations.join(" and ")}. Say so plainly in your first sentence.`
+      : "",
+    "",
+    "Explain why these are the right matches for this buyer.",
+  ].join("\n");
 
-  for await (const event of stream) {
-    if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-      send({ type: "narrative_delta", text: event.delta.text });
-    }
+  for await (const delta of streamText({ model: MODEL_SMART, system, user, maxTokens: 1400 })) {
+    send({ type: "narrative_delta", text: delta });
   }
 }

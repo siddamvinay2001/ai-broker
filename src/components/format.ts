@@ -65,3 +65,18 @@ export function formatHandover(iso: string | null): string | null {
   if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleDateString("en-AE", { year: "numeric", month: "short" });
 }
+
+/// Dubai community slugs often contain short acronyms (JBR, DIFC, JLT) that
+/// read oddly title-cased ("Jbr") - treat any short all-letters segment as
+/// an acronym rather than maintaining a fixed community list. Mirrors the
+/// (unexported) helper in src/lib/brokers.ts.
+export function humanizeSlug(slug: string): string {
+  return slug
+    .split("-")
+    .map((word) =>
+      word.length <= 4 && /^[a-z]+$/i.test(word)
+        ? word.toUpperCase()
+        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+    )
+    .join(" ");
+}

@@ -81,6 +81,16 @@ function propertyFilters(intent: BuyerIntent): Prisma.Sql[] {
   if (intent.bedsMax !== null) {
     clauses.push(Prisma.sql`p."beds" <= ${intent.bedsMax}`);
   }
+  if (intent.communities.length > 0) {
+    // The parser yields display names; match those or the slug form, so both
+    // "Dubai Marina" and "dubai-marina" resolve.
+    const needles = intent.communities.map((c) => c.toLowerCase());
+    clauses.push(
+      Prisma.sql`(LOWER(c."name") IN (${Prisma.join(needles)}) OR LOWER(REPLACE(c."slug", '-', ' ')) IN (${Prisma.join(
+        needles.map((n) => n.replace(/-/g, " ")),
+      )}))`,
+    );
+  }
   return clauses;
 }
 
@@ -160,25 +170,78 @@ export async function retrieveCommunities(
 export type RelaxedSearch = {
   properties: RetrievedProperty[];
   relaxations: string[];
+  /// How many of `properties` satisfied the brief with no widening at all.
+  exactCount: number;
 };
+
+/// One exact match is technically correct and a poor viewing. We widen until
+/// there is enough to compare, or we run out of constraints to widen.
+const MIN_USEFUL_RESULTS = 3;
 
 export async function retrievePropertiesWithFallback(
   intent: BuyerIntent,
   queryVector: string | null,
   limit = 6,
 ): Promise<RelaxedSearch> {
+  // Widening the property type is a real substitution a broker would make.
+  // Widening the bedroom count by one is too. Changing BUY into RENT is not -
+  // it mixes sale prices with annual rents and is a category error, so
+  // listingType and budget are never relaxed.
+  const widenBeds = (by: number): BuyerIntent => ({
+    ...intent,
+    propertyTypes: [],
+    bedsMin: intent.bedsMin === null ? null : Math.max(0, intent.bedsMin - by),
+    bedsMax: intent.bedsMax === null ? null : intent.bedsMax + by,
+  });
+
   const attempts: { intent: BuyerIntent; note: string | null }[] = [
     { intent, note: null },
     { intent: { ...intent, propertyTypes: [] }, note: "widened the property type" },
-    { intent: { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null }, note: "widened the bedroom count" },
-    { intent: { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null, listingType: null }, note: "looked at both sale and rental listings" },
+    { intent: widenBeds(1), note: "allowed one bedroom either side" },
+    { intent: { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null }, note: "set the bedroom count aside" },
+    { intent: { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null, communities: [] },
+      note: intent.communities.length
+        ? `looked beyond ${intent.communities.join(" and ")}`
+        : null },
   ];
 
+  // Exact matches always lead. Relaxed attempts only ever APPEND near-misses
+  // behind them - a wider search must never displace a precise hit.
+  const seen = new Set<string>();
+  const properties: RetrievedProperty[] = [];
   const relaxations: string[] = [];
-  for (const attempt of attempts) {
+  let exactCount = 0;
+
+  for (const [index, attempt] of attempts.entries()) {
+    if (properties.length >= MIN_USEFUL_RESULTS) break;
+
+    const batch = await retrieveProperties(attempt.intent, queryVector, limit);
+    const added = batch.filter((p) => !seen.has(p.id));
+    if (added.length === 0) continue;
+
+    // Only name a relaxation once it actually contributed a result.
     if (attempt.note) relaxations.push(attempt.note);
-    const properties = await retrieveProperties(attempt.intent, queryVector, limit);
-    if (properties.length > 0) return { properties, relaxations };
+    if (index === 0) exactCount = added.length;
+    for (const p of added) {
+      seen.add(p.id);
+      properties.push(p);
+      if (properties.length >= limit) break;
+    }
   }
-  return { properties: [], relaxations };
+
+  // Last resort: a floor price that excludes the entire catalogue is almost
+  // always a misread brief, not a real requirement. Returning nothing is the
+  // worst outcome, so drop it rather than show an empty page.
+  if (properties.length === 0 && intent.budgetMin !== null) {
+    const lastDitch = await retrieveProperties(
+      { ...intent, propertyTypes: [], bedsMin: null, bedsMax: null, communities: [], budgetMin: null },
+      queryVector,
+      limit,
+    );
+    if (lastDitch.length > 0) {
+      return { properties: lastDitch, relaxations: ["set aside the minimum price"], exactCount: 0 };
+    }
+  }
+
+  return { properties, relaxations, exactCount };
 }

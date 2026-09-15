@@ -1,8 +1,13 @@
 /**
- * Turns a visitor's free-text brief into a structured BuyerIntent using the
- * cheap/fast Bedrock model. This sits in front of vector search: on any
- * failure we degrade to EMPTY_INTENT (pure vector search) rather than
- * throwing, since a broken extractor should never take down search.
+ * Turns a visitor's free-text brief into a structured BuyerIntent.
+ *
+ * Two readers run, not one. A deterministic parser handles the constraints
+ * that must be exactly right - budget, bedrooms, buy vs rent - and the model
+ * handles the soft signals it is genuinely better at: lifestyle, phrasing,
+ * and the summary. Where both have an opinion on a hard constraint, the rules
+ * win. That is deliberate: in testing, most models read "a 2-bed I can rent
+ * out" as a tenancy (RENT) when it is plainly a purchase (BUY), and a wrong
+ * listingType silently returns annual rents next to sale prices.
  */
 import {
   BuyerIntentSchema,
@@ -12,7 +17,8 @@ import {
   PROPERTY_TYPES,
   type BuyerIntent,
 } from "@/lib/types/intent";
-import { getBedrockClient, MODEL_FAST } from "@/lib/bedrock";
+import { completeJson, MODEL_FAST } from "@/lib/llm";
+import { parseIntentRules, type KnownCommunity } from "@/lib/intent-rules";
 
 /** AED. Below this, "Golden Visa" talk doesn't actually qualify - used to
  * floor budgetMin when the model tags the GOLDEN_VISA goal. */
@@ -123,51 +129,87 @@ function repairRawIntent(raw: unknown): unknown {
 /** Pulls the first text block out of a Messages API response without
  * depending on the SDK's ContentBlock union type - narrowed by hand so this
  * works regardless of which content block variants the SDK version exports. */
-function extractResponseText(content: unknown): string | undefined {
-  if (!Array.isArray(content)) return undefined;
-  for (const block of content) {
-    if (
-      block &&
-      typeof block === "object" &&
-      (block as { type?: unknown }).type === "text" &&
-      typeof (block as { text?: unknown }).text === "string"
-    ) {
-      return (block as { text: string }).text;
-    }
+
+/// The model returns tags like "FAMILY_FRIENDLY" while the rules return
+/// "family-friendly". Without normalising, both survive and the UI shows the
+/// same signal twice in two different styles.
+function dedupeLifestyle(values: string[]): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const raw of values) {
+    const label = raw.trim().replace(/_/g, " ").toLowerCase();
+    if (!label) continue;
+    const key = label.replace(/[^a-z]/g, "");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(label);
   }
-  return undefined;
+  return out;
 }
 
-export async function extractIntent(query: string): Promise<BuyerIntent> {
+/// Rules win on hard constraints they resolved; the model fills the gaps and
+/// owns the soft signals. Never let the model overwrite a constraint the
+/// rules were certain about.
+function mergeIntents(rules: BuyerIntent, model: BuyerIntent): BuyerIntent {
+  const prefer = <T,>(ruleValue: T | null, modelValue: T | null): T | null =>
+    ruleValue !== null ? ruleValue : modelValue;
+
+  // Budget is merged as a PAIR, never field by field. "AED 3M" is a ceiling,
+  // and the rules read it that way; models routinely also set budgetMin to
+  // 3M, which turns a ceiling into an exact-price filter and returns nothing.
+  // If the rules resolved either bound, their reading of the budget stands.
+  const rulesHaveBudget = rules.budgetMin !== null || rules.budgetMax !== null;
+
+  return {
+    budgetMin: rulesHaveBudget ? rules.budgetMin : model.budgetMin,
+    budgetMax: rulesHaveBudget ? rules.budgetMax : model.budgetMax,
+    listingType: prefer(rules.listingType, model.listingType),
+    bedsMin: prefer(rules.bedsMin, model.bedsMin),
+    bedsMax: prefer(rules.bedsMax, model.bedsMax),
+    propertyTypes: rules.propertyTypes.length ? rules.propertyTypes : model.propertyTypes,
+    communities: rules.communities.length ? rules.communities : model.communities,
+    goals: [...new Set([...rules.goals, ...model.goals])],
+    lifestyle: dedupeLifestyle([...model.lifestyle, ...rules.lifestyle]),
+    languagePreference: prefer(rules.languagePreference, model.languagePreference),
+    timeline: model.timeline ?? rules.timeline,
+    summary: model.summary?.trim() || rules.summary,
+  };
+}
+
+export async function extractIntent(
+  query: string,
+  knownCommunities: KnownCommunity[] = [],
+): Promise<BuyerIntent> {
+  const rules = parseIntentRules(query, knownCommunities);
+
   try {
-    const client = getBedrockClient();
-    const response = await client.messages.create({
+    const raw = await completeJson({
       model: MODEL_FAST,
-      max_tokens: 2048,
       system: SYSTEM_PROMPT,
-      output_config: {
-        format: { type: "json_schema", schema: INTENT_JSON_SCHEMA },
-      },
-      messages: [{ role: "user", content: query }],
+      user: query,
+      schemaName: "buyer_intent",
+      schema: INTENT_JSON_SCHEMA as Record<string, unknown>,
+      maxTokens: 3000,
     });
 
-    const text = extractResponseText(response.content);
-    if (text === undefined) {
-      throw new Error("Bedrock response had no text block to parse as intent JSON");
-    }
-
-    const raw: unknown = JSON.parse(text);
-    const repaired = repairRawIntent(raw);
-
-    const result = BuyerIntentSchema.safeParse(repaired);
+    const result = BuyerIntentSchema.safeParse(repairRawIntent(raw));
     if (!result.success) {
-      throw new Error(`Intent extraction failed schema validation: ${result.error.message}`);
+      throw new Error(`schema validation failed: ${result.error.message}`);
     }
 
-    return result.data;
+    const merged = mergeIntents(rules, result.data);
+
+    // The AED 2M floor is a real legal threshold, so it may only be applied
+    // when the visitor actually raised the Golden Visa - which the rules
+    // detect from their words. Models sometimes tag the goal unprompted, and
+    // acting on that silently imposes a minimum price nobody asked for.
+    if (rules.goals.includes("GOLDEN_VISA")) {
+      merged.budgetMin = Math.max(merged.budgetMin ?? 0, GOLDEN_VISA_THRESHOLD);
+    }
+    return merged;
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);
-    console.error(`extractIntent: falling back to EMPTY_INTENT - ${reason}`);
-    return { ...EMPTY_INTENT, summary: query };
+    console.error(`extractIntent: model unavailable, using rule-based parse only - ${reason}`);
+    return rules.summary ? rules : { ...EMPTY_INTENT, summary: query };
   }
 }
