@@ -1,0 +1,798 @@
+{
+  "communities": [
+    {
+      "slug": "dubai-marina",
+      "name": "Dubai Marina",
+      "description": "An iconic waterfront destination featuring high-rise residential towers, upscale dining, and vibrant nightlife. Dubai Marina attracts international investors and young professionals seeking modern apartment living with marina and sea views. Known for excellent rental yields and walkable promenades lined with restaurants and retail.",
+      "avgPricePerSqft": 1850,
+      "avgRentPerSqft": 130,
+      "avgGrossYield": 6.8,
+      "serviceChargeAvg": 19.5,
+      "lifestyleTags": [
+        "waterfront",
+        "nightlife",
+        "walkable"
+      ],
+      "schools": [
+        "Emirates International School",
+        "English Speaking School"
+      ],
+      "metroAccess": "DMCC & Sobha Realty stations on the Red Line",
+      "beachProximity": "5 min walk to JBR beach",
+      "heroImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "downtown-dubai",
+      "name": "Downtown Dubai",
+      "description": "The prestigious heart of Dubai, home to Burj Khalifa, The Fountain, and Souk Al Bahar. Downtown attracts affluent families and executives seeking luxury apartments with iconic skyline views and proximity to world-class dining and shopping. Premium pricing reflects unmatched location and investment stability.",
+      "avgPricePerSqft": 2400,
+      "avgRentPerSqft": 95,
+      "avgGrossYield": 5.2,
+      "serviceChargeAvg": 25,
+      "lifestyleTags": [
+        "prestige",
+        "iconic-views",
+        "retail"
+      ],
+      "schools": [
+        "Al Noor Training Centre",
+        "Wellington International School"
+      ],
+      "metroAccess": "Burj Khalifa/Downtown station on Red & Green Lines",
+      "beachProximity": "15 min drive to Jumeirah Beach",
+      "heroImage": "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "palm-jumeirah",
+      "name": "Palm Jumeirah",
+      "description": "An ultra-luxury man-made palm-shaped island featuring sprawling waterfront villas and penthouses with private beach access. Palm Jumeirah epitomizes exclusivity, catering to ultra-high-net-worth individuals and celebrities seeking unparalleled privacy and prestige. Homes command premium prices with panoramic sea and marina views.",
+      "avgPricePerSqft": 3200,
+      "avgRentPerSqft": 185,
+      "avgGrossYield": 4.8,
+      "serviceChargeAvg": 32,
+      "lifestyleTags": [
+        "ultra-luxury",
+        "beachfront",
+        "privacy"
+      ],
+      "schools": [
+        "Jumeirah International School",
+        "American School of Dubai"
+      ],
+      "metroAccess": "Monorail to Atlantis The Palm",
+      "beachProximity": "Private beach access, waterfront living",
+      "heroImage": "https://images.unsplash.com/photo-1546412414-e1885259563a?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "jumeirah-village-circle",
+      "name": "Jumeirah Village Circle (JVC)",
+      "description": "An affordable family-friendly community with townhouses and villas offering excellent value and high rental yields. JVC appeals to investors and young families seeking spacious homes with community amenities, parks, and retail centers. Strong market activity and demand from expat families boost consistent returns.",
+      "avgPricePerSqft": 980,
+      "avgRentPerSqft": 75,
+      "avgGrossYield": 7.8,
+      "serviceChargeAvg": 13.5,
+      "lifestyleTags": [
+        "affordable",
+        "family-friendly",
+        "high-yield"
+      ],
+      "schools": [
+        "Dunes International School",
+        "Universal American School"
+      ],
+      "metroAccess": "Route 66 access, 20 min to Dubai Marina",
+      "beachProximity": "25 min drive to Jumeirah Beach",
+      "heroImage": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "dubai-hills-estate",
+      "name": "Dubai Hills Estate",
+      "description": "A luxury gated community set against a golf course backdrop, offering spacious villas and townhouses ideal for established families and executives. Dubai Hills Estate combines suburban tranquility with upscale amenities including shopping outlets and golf facilities. Strong family-oriented appeal with well-maintained properties.",
+      "avgPricePerSqft": 2100,
+      "avgRentPerSqft": 110,
+      "avgGrossYield": 5.5,
+      "serviceChargeAvg": 21,
+      "lifestyleTags": [
+        "family-oriented",
+        "golf",
+        "gated-community"
+      ],
+      "schools": [
+        "Dubai Hills School",
+        "Jumeirah English Speaking School"
+      ],
+      "metroAccess": "Proximity to Arabian Ranches stations on Red Line",
+      "beachProximity": "20 min drive to Jumeirah Beach",
+      "heroImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "business-bay",
+      "name": "Business Bay",
+      "description": "A vibrant mixed-use community targeting young professionals and investors with modern apartments, corporate offices, and dining venues. Business Bay offers strategic proximity to Downtown Dubai and excellent connectivity via metro. Competitive pricing and high rental demand make it attractive for investor portfolios.",
+      "avgPricePerSqft": 1650,
+      "avgRentPerSqft": 120,
+      "avgGrossYield": 7.3,
+      "serviceChargeAvg": 17,
+      "lifestyleTags": [
+        "professional",
+        "investor-friendly",
+        "connectivity"
+      ],
+      "schools": [
+        "Universal American School",
+        "Repton School"
+      ],
+      "metroAccess": "Business Bay station on Green Line, close to Red Line",
+      "beachProximity": "12 min drive to Jumeirah Beach",
+      "heroImage": "https://images.unsplash.com/photo-1526495124232-a04e1849168c?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "arabian-ranches",
+      "name": "Arabian Ranches",
+      "description": "An established master-planned villa community featuring traditional Arabic-inspired architecture and spacious family homes with private gardens and parks. Arabian Ranches is renowned for its strong sense of community, quality schools, and stable property values. Perfect for families prioritizing space and suburban living.",
+      "avgPricePerSqft": 1900,
+      "avgRentPerSqft": 105,
+      "avgGrossYield": 5.8,
+      "serviceChargeAvg": 19,
+      "lifestyleTags": [
+        "villa-community",
+        "family-focused",
+        "stable-values"
+      ],
+      "schools": [
+        "Al Baraka School",
+        "Ranches School"
+      ],
+      "metroAccess": "Arabian Ranches station on Red Line",
+      "beachProximity": "25 min drive to Jumeirah Beach",
+      "heroImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1600&q=80&auto=format&fit=crop"
+    },
+    {
+      "slug": "dubai-creek-harbour",
+      "name": "Dubai Creek Harbour",
+      "description": "An emerging mixed-use waterfront development along Dubai Creek offering modern apartments and townhouses at competitive prices. Dubai Creek Harbour represents strong growth potential with planned metro connectivity and sustained infrastructure investment. Ideal for investors seeking capital appreciation and fresh community development.",
+      "avgPricePerSqft": 1450,
+      "avgRentPerSqft": 95,
+      "avgGrossYield": 6.9,
+      "serviceChargeAvg": 15.5,
+      "lifestyleTags": [
+        "waterfront",
+        "growth-potential",
+        "modern"
+      ],
+      "schools": [
+        "Creekside School (planned)",
+        "Dubai Creek Harbour schools"
+      ],
+      "metroAccess": "Creek Harbour station planned on upcoming extension",
+      "beachProximity": "15 min drive to Jumeirah Beach",
+      "heroImage": "https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=1600&q=80&auto=format&fit=crop"
+    }
+  ],
+  "properties": [
+    {
+      "refNo": "BM-1001",
+      "title": "Stunning 2BR Marina Apartment with Sea View",
+      "description": "Immaculate two-bedroom, three-bathroom apartment in Marina Promenade featuring floor-to-ceiling windows with mesmerizing marina and sea views. Modern Italian kitchen, luxury finishes, and access to premium amenities including infinity pool, state-of-the-art gym, and sauna. Perfect for discerning buyers seeking walkable waterfront living.",
+      "listingType": "BUY",
+      "propertyType": "APARTMENT",
+      "communitySlug": "dubai-marina",
+      "price": 2850000,
+      "beds": 2,
+      "baths": 3,
+      "sizeSqft": 1420,
+      "serviceChargePerSqft": 19.5,
+      "amenities": [
+        "Infinity pool",
+        "Gym",
+        "Sauna",
+        "Concierge",
+        "Marina view"
+      ],
+      "view": "Marina and sea view",
+      "furnishing": "FURNISHED",
+      "developer": "Emaar",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71176234891",
+      "images": [
+        "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "DD-1002",
+      "title": "Luxury 3BR Downtown Apartment with Burj Khalifa View",
+      "description": "Exceptional three-bedroom, three-bathroom apartment in Downtown Dubai with direct Burj Khalifa and fountain views from wraparound balcony. Premium finishes, smart home automation, and direct mall access via air-conditioned walkway. Ideal for luxury seekers valuing iconic views and prestigious address.",
+      "listingType": "BUY",
+      "propertyType": "APARTMENT",
+      "communitySlug": "downtown-dubai",
+      "price": 3950000,
+      "beds": 3,
+      "baths": 3,
+      "sizeSqft": 1640,
+      "serviceChargePerSqft": 25,
+      "amenities": [
+        "Concierge 24/7",
+        "Pool",
+        "Gym",
+        "Spa",
+        "Burj view"
+      ],
+      "view": "Burj Khalifa and fountain view",
+      "furnishing": "SEMI_FURNISHED",
+      "developer": "Emaar",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71189745632",
+      "images": [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "PJ-1003",
+      "title": "Exclusive Palm Jumeirah Waterfront Villa",
+      "description": "Rare beachfront villa on Palm Jumeirah's exclusive fronds featuring six spacious bedrooms, private infinity pool overlooking the Arabian Gulf, and direct beach access. Iconic architecture with smart home systems, wine cellar, and home cinema. The epitome of luxury living for ultra-high-net-worth buyers.",
+      "listingType": "BUY",
+      "propertyType": "VILLA",
+      "communitySlug": "palm-jumeirah",
+      "price": 42500000,
+      "beds": 6,
+      "baths": 7,
+      "sizeSqft": 12800,
+      "serviceChargePerSqft": 32,
+      "amenities": [
+        "Private beach",
+        "Infinity pool",
+        "Smart home",
+        "Cinema",
+        "Wine cellar"
+      ],
+      "view": "Arabian Gulf and marina view",
+      "furnishing": "FURNISHED",
+      "developer": "Nakheel",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71192847561",
+      "images": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "JVC-1004",
+      "title": "Family 3BR Townhouse with Garden & Pool",
+      "description": "Well-maintained three-bedroom, two-bathroom townhouse in JVC offering spacious layout with private garden, shared pool access, and modern kitchen. Perfect for families seeking affordability and strong rental income potential. Walking distance to schools, parks, and retail centers.",
+      "listingType": "BUY",
+      "propertyType": "TOWNHOUSE",
+      "communitySlug": "jumeirah-village-circle",
+      "price": 975000,
+      "beds": 3,
+      "baths": 2,
+      "sizeSqft": 1050,
+      "serviceChargePerSqft": 13.5,
+      "amenities": [
+        "Pool access",
+        "Garden",
+        "Parking",
+        "Community park"
+      ],
+      "view": "Garden and pool view",
+      "furnishing": "UNFURNISHED",
+      "developer": "Azizi",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71178923451",
+      "images": [
+        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "DHE-1005",
+      "title": "Spacious 5BR Emirates Hills Mansion",
+      "description": "Magnificent five-bedroom, five-bathroom villa in Dubai Hills Estate set on a large landscaped plot with resort-style pool, tennis court, and manicured gardens. Premium finishes, floor-to-ceiling windows, and spa facilities. Gated community with golf course proximity, perfect for families valuing space and security.",
+      "listingType": "BUY",
+      "propertyType": "MANSION",
+      "communitySlug": "dubai-hills-estate",
+      "price": 18750000,
+      "beds": 5,
+      "baths": 5,
+      "sizeSqft": 8500,
+      "serviceChargePerSqft": 21,
+      "amenities": [
+        "Resort pool",
+        "Tennis court",
+        "Spa",
+        "Security gate"
+      ],
+      "view": "Golf course and garden view",
+      "furnishing": "FURNISHED",
+      "developer": "Damac",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71185634297",
+      "images": [
+        "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "BB-1006",
+      "title": "Modern 1BR Business Bay Apartment - Investor Ready",
+      "description": "Compact yet elegant one-bedroom, one-bathroom apartment in Business Bay with high ceilings, open-plan living, and smart fixtures. Excellent location for investors seeking strong rental returns with proximity to office districts and downtown. Move-in ready with competitive pricing.",
+      "listingType": "BUY",
+      "propertyType": "APARTMENT",
+      "communitySlug": "business-bay",
+      "price": 750000,
+      "beds": 1,
+      "baths": 1,
+      "sizeSqft": 480,
+      "serviceChargePerSqft": 17,
+      "amenities": [
+        "Gym",
+        "Pool",
+        "Concierge",
+        "Modern kitchen"
+      ],
+      "view": "City view",
+      "furnishing": "FURNISHED",
+      "developer": "Binghatti",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71181924756",
+      "images": [
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "AR-1007",
+      "title": "Traditional 4BR Arabian Ranches Villa",
+      "description": "Classic four-bedroom, three-bathroom villa in Arabian Ranches featuring authentic Arabian architectural design, spacious courtyard, and mature landscaping. Excellent family home with top-rated schools nearby and strong community atmosphere. Established neighborhood with steady appreciation.",
+      "listingType": "BUY",
+      "propertyType": "VILLA",
+      "communitySlug": "arabian-ranches",
+      "price": 6850000,
+      "beds": 4,
+      "baths": 3,
+      "sizeSqft": 3400,
+      "serviceChargePerSqft": 19,
+      "amenities": [
+        "Courtyard",
+        "Maid room",
+        "Garden",
+        "Security"
+      ],
+      "view": "Community and garden view",
+      "furnishing": "UNFURNISHED",
+      "developer": "Emaar",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71187563421",
+      "images": [
+        "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "DCH-1008",
+      "title": "Off-Plan 2BR Dubai Creek Harbour Apartment",
+      "description": "Modern two-bedroom apartment in Dubai Creek Harbour's exciting waterfront development offering contemporary design with premium finishes and creek views. Off-plan opportunity with attractive flexible payment terms. Strong capital appreciation potential as infrastructure and amenities complete in this emerging destination.",
+      "listingType": "OFFPLAN",
+      "propertyType": "APARTMENT",
+      "communitySlug": "dubai-creek-harbour",
+      "price": 1450000,
+      "beds": 2,
+      "baths": 2,
+      "sizeSqft": 1000,
+      "serviceChargePerSqft": 15.5,
+      "amenities": [
+        "Creek view",
+        "Modern design",
+        "Gym",
+        "Community center"
+      ],
+      "view": "Creek and waterfront view",
+      "furnishing": "SEMI_FURNISHED",
+      "developer": "Meraas",
+      "handoverDate": "2028-03-15",
+      "paymentPlan": "25% down, 35% during construction, 40% on handover",
+      "completionStatus": "OFF_PLAN",
+      "dldPermit": "71190000001",
+      "images": [
+        "https://images.unsplash.com/photo-1560448075-bb485b067938?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "BM-2001",
+      "title": "Spacious Marina 2BR Apartment for Rent",
+      "description": "Furnished two-bedroom, two-bathroom apartment in Marina Promenade available for long-term lease. Well-appointed with modern kitchen and living areas, direct pool and gym access. Ideal for professionals and expat families seeking premium waterfront living with flexible lease terms.",
+      "listingType": "RENT",
+      "propertyType": "APARTMENT",
+      "communitySlug": "dubai-marina",
+      "price": 180000,
+      "beds": 2,
+      "baths": 2,
+      "sizeSqft": 1200,
+      "serviceChargePerSqft": 19.5,
+      "amenities": [
+        "Pool",
+        "Gym",
+        "Concierge",
+        "Balcony"
+      ],
+      "view": "Marina view",
+      "furnishing": "FURNISHED",
+      "developer": "Emaar",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71176234892",
+      "images": [
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "DD-2002",
+      "title": "Luxury Downtown Dubai Penthouse for Rent",
+      "description": "Sophisticated two-bedroom penthouse in Downtown Dubai with panoramic Burj Khalifa and fountain views, modern minimalist design, and high-end finishes. Access to exclusive building amenities including rooftop terrace, spa, and concierge service. Premium rental property for discerning tenants.",
+      "listingType": "RENT",
+      "propertyType": "PENTHOUSE",
+      "communitySlug": "downtown-dubai",
+      "price": 240000,
+      "beds": 2,
+      "baths": 2,
+      "sizeSqft": 1350,
+      "serviceChargePerSqft": 25,
+      "amenities": [
+        "Rooftop terrace",
+        "Spa",
+        "Concierge",
+        "Premium finishes"
+      ],
+      "view": "Burj Khalifa and city skyline",
+      "furnishing": "FURNISHED",
+      "developer": "Emaar",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71189745633",
+      "images": [
+        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "JVC-2003",
+      "title": "Affordable JVC Townhouse for Rent - Family Friendly",
+      "description": "Unfurnished three-bedroom townhouse in Jumeirah Village Circle, ideal for families seeking spacious accommodation with private garden and parking. Close to excellent schools and community amenities. Competitive rental rate in high-demand family community.",
+      "listingType": "RENT",
+      "propertyType": "TOWNHOUSE",
+      "communitySlug": "jumeirah-village-circle",
+      "price": 95000,
+      "beds": 3,
+      "baths": 2,
+      "sizeSqft": 1000,
+      "serviceChargePerSqft": 13.5,
+      "amenities": [
+        "Garden",
+        "Parking",
+        "Community pool",
+        "School proximity"
+      ],
+      "view": "Garden view",
+      "furnishing": "UNFURNISHED",
+      "developer": "Azizi",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71178923452",
+      "images": [
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "BB-2004",
+      "title": "Studio Business Bay Apartment for Rent",
+      "description": "Contemporary studio apartment in Business Bay perfect for young professionals and business travelers. Open-plan layout with kitchenette, modern furnishings, and strategic location near metro and office towers. Ideal for short to medium-term leasing.",
+      "listingType": "RENT",
+      "propertyType": "APARTMENT",
+      "communitySlug": "business-bay",
+      "price": 48000,
+      "beds": 0,
+      "baths": 1,
+      "sizeSqft": 380,
+      "serviceChargePerSqft": 17,
+      "amenities": [
+        "Gym",
+        "Pool",
+        "Kitchenette",
+        "Modern finishes"
+      ],
+      "view": "City view",
+      "furnishing": "FURNISHED",
+      "developer": "Binghatti",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71181924757",
+      "images": [
+        "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "PJ-3001",
+      "title": "Off-Plan Palm Jumeirah Luxury Penthouse",
+      "description": "Ultra-premium off-plan penthouse on Palm Jumeirah featuring four bedrooms, private infinity pool, and 360-degree Arabian Gulf views. Architectural masterpiece by world-renowned designer with smart home integration and concierge service. Pre-launch pricing for early investors.",
+      "listingType": "OFFPLAN",
+      "propertyType": "PENTHOUSE",
+      "communitySlug": "palm-jumeirah",
+      "price": 35000000,
+      "beds": 4,
+      "baths": 4,
+      "sizeSqft": 7200,
+      "serviceChargePerSqft": 32,
+      "amenities": [
+        "Infinity pool",
+        "Smart home",
+        "Concierge",
+        "360 Gulf views"
+      ],
+      "view": "Arabian Gulf panoramic view",
+      "furnishing": "UNFURNISHED",
+      "developer": "Omniyat",
+      "handoverDate": "2029-06-30",
+      "paymentPlan": "30% down, 30% at 50% completion, 40% on handover",
+      "completionStatus": "OFF_PLAN",
+      "dldPermit": "71192847562",
+      "images": [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "DHE-3002",
+      "title": "Off-Plan Dubai Hills Estate Family Villa",
+      "description": "Off-plan four-bedroom villa in Dubai Hills Estate's new luxury phase featuring contemporary architecture, landscaped gardens, private pool, and smart home systems. Gated community with top-rated schools and golf course access. Ideal investment for families seeking modern villa living.",
+      "listingType": "OFFPLAN",
+      "propertyType": "VILLA",
+      "communitySlug": "dubai-hills-estate",
+      "price": 7950000,
+      "beds": 4,
+      "baths": 4,
+      "sizeSqft": 3800,
+      "serviceChargePerSqft": 21,
+      "amenities": [
+        "Pool",
+        "Smart home",
+        "Landscaped garden",
+        "Security gate"
+      ],
+      "view": "Golf course and garden view",
+      "furnishing": "UNFURNISHED",
+      "developer": "Damac",
+      "handoverDate": "2027-09-15",
+      "paymentPlan": "20% down, 40% during construction, 40% on handover",
+      "completionStatus": "OFF_PLAN",
+      "dldPermit": "71185634298",
+      "images": [
+        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "DCH-1009",
+      "title": "Duplex Dubai Creek Harbour - Modern Living",
+      "description": "Stylish two-level duplex in Dubai Creek Harbour offering three bedrooms, modern open-plan design, and creek views from expansive balconies. Ready to occupy with quality finishes and access to waterfront promenades. Perfect for families seeking modern dual-level family home.",
+      "listingType": "BUY",
+      "propertyType": "DUPLEX",
+      "communitySlug": "dubai-creek-harbour",
+      "price": 2100000,
+      "beds": 3,
+      "baths": 3,
+      "sizeSqft": 1550,
+      "serviceChargePerSqft": 15.5,
+      "amenities": [
+        "Creek view",
+        "Modern finishes",
+        "Balcony",
+        "Community parks"
+      ],
+      "view": "Creek and waterfront view",
+      "furnishing": "UNFURNISHED",
+      "developer": "Meraas",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71190000002",
+      "images": [
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&q=80&auto=format&fit=crop"
+      ]
+    },
+    {
+      "refNo": "AR-1011",
+      "title": "Luxury Arabian Ranches Duplex Villa",
+      "description": "Distinctive two-level duplex villa in Arabian Ranches combining traditional design with contemporary comfort. Four bedrooms, three bathrooms, spacious courtyard, and private parking. Gated community living with excellent schools and established family neighborhoods.",
+      "listingType": "BUY",
+      "propertyType": "DUPLEX",
+      "communitySlug": "arabian-ranches",
+      "price": 4250000,
+      "beds": 4,
+      "baths": 3,
+      "sizeSqft": 2200,
+      "serviceChargePerSqft": 19,
+      "amenities": [
+        "Courtyard",
+        "Parking",
+        "Maid room",
+        "Community amenities"
+      ],
+      "view": "Community and garden view",
+      "furnishing": "SEMI_FURNISHED",
+      "developer": "Emaar",
+      "handoverDate": null,
+      "paymentPlan": null,
+      "completionStatus": "READY",
+      "dldPermit": "71187563422",
+      "images": [
+        "https://images.unsplash.com/photo-1560448075-bb485b067938?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=1600&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1600&q=80&auto=format&fit=crop"
+      ]
+    }
+  ],
+  "brokers": [
+    {
+      "slug": "aisha-rahman",
+      "name": "Aisha Rahman",
+      "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1600&q=80&auto=format&fit=crop",
+      "languages": [
+        "English",
+        "Arabic"
+      ],
+      "specializationCommunities": [
+        "dubai-marina",
+        "business-bay",
+        "dubai-creek-harbour"
+      ],
+      "specializationTypes": [
+        "APARTMENT",
+        "PENTHOUSE"
+      ],
+      "dealsClosed": 143,
+      "avgDealSize": 2500000,
+      "rating": 4.8,
+      "yearsExperience": 9,
+      "reraBrn": "48291",
+      "bio": "Aisha specializes in off-market waterfront and downtown apartment deals, leveraging her deep network of international investors and developers. With nearly a decade in Dubai luxury real estate, she closes high-value transactions and consistently exceeds client expectations."
+    },
+    {
+      "slug": "omar-al-mansouri",
+      "name": "Omar Al Mansouri",
+      "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1600&q=80&auto=format&fit=crop",
+      "languages": [
+        "English",
+        "Arabic"
+      ],
+      "specializationCommunities": [
+        "palm-jumeirah",
+        "dubai-hills-estate",
+        "arabian-ranches"
+      ],
+      "specializationTypes": [
+        "VILLA",
+        "MANSION"
+      ],
+      "dealsClosed": 97,
+      "avgDealSize": 18500000,
+      "rating": 4.9,
+      "yearsExperience": 12,
+      "reraBrn": "48292",
+      "bio": "Omar is the go-to specialist for ultra-luxury villas and mansions in Dubai's most exclusive communities. His network of affluent buyers and insider knowledge of exclusive off-market opportunities make him invaluable for trophy property sales and acquisitions."
+    },
+    {
+      "slug": "sara-khan",
+      "name": "Sara Khan",
+      "photo": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=1600&q=80&auto=format&fit=crop",
+      "languages": [
+        "English",
+        "Arabic",
+        "Urdu"
+      ],
+      "specializationCommunities": [
+        "jumeirah-village-circle",
+        "dubai-hills-estate",
+        "business-bay"
+      ],
+      "specializationTypes": [
+        "APARTMENT",
+        "TOWNHOUSE",
+        "VILLA"
+      ],
+      "dealsClosed": 287,
+      "avgDealSize": 1800000,
+      "rating": 4.7,
+      "yearsExperience": 7,
+      "reraBrn": "48293",
+      "bio": "Sara is known for her investor-focused approach, specializing in high-yield rental properties and family communities. Her expertise in affordable to mid-market segments and strong lease-up rates make her the preferred broker for portfolio investors and young families."
+    },
+    {
+      "slug": "marcus-johnson",
+      "name": "Marcus Johnson",
+      "photo": "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=1600&q=80&auto=format&fit=crop",
+      "languages": [
+        "English"
+      ],
+      "specializationCommunities": [
+        "dubai-creek-harbour",
+        "dubai-marina",
+        "business-bay"
+      ],
+      "specializationTypes": [
+        "APARTMENT",
+        "OFFICE",
+        "HOTEL_APARTMENT"
+      ],
+      "dealsClosed": 156,
+      "avgDealSize": 2100000,
+      "rating": 4.6,
+      "yearsExperience": 8,
+      "reraBrn": "48294",
+      "bio": "Marcus excels at off-plan investments and commercial real estate, with a track record of successful pre-launch campaigns and corporate relocations. His analytical approach and developer relationships position him as a trusted advisor for long-term investment strategies."
+    },
+    {
+      "slug": "leila-al-falasi",
+      "name": "Leila Al Falasi",
+      "photo": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1600&q=80&auto=format&fit=crop",
+      "languages": [
+        "English",
+        "Arabic"
+      ],
+      "specializationCommunities": [
+        "downtown-dubai",
+        "dubai-marina",
+        "palm-jumeirah"
+      ],
+      "specializationTypes": [
+        "PENTHOUSE",
+        "APARTMENT",
+        "VILLA"
+      ],
+      "dealsClosed": 118,
+      "avgDealSize": 5200000,
+      "rating": 4.8,
+      "yearsExperience": 10,
+      "reraBrn": "48295",
+      "bio": "Leila specializes in iconic properties with investment-grade potential in Dubai's most prestigious addresses. Her luxury market expertise and connections with wealth management firms and international investors make her ideal for high-net-worth acquisitions."
+    }
+  ]
+}

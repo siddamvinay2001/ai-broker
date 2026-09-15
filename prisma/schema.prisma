@@ -1,0 +1,200 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+enum ListingType {
+  BUY
+  RENT
+  OFFPLAN
+}
+
+enum PropertyType {
+  APARTMENT
+  VILLA
+  TOWNHOUSE
+  PENTHOUSE
+  DUPLEX
+  MANSION
+  HOTEL_APARTMENT
+  OFFICE
+}
+
+enum Furnishing {
+  FURNISHED
+  SEMI_FURNISHED
+  UNFURNISHED
+}
+
+enum CompletionStatus {
+  READY
+  OFF_PLAN
+}
+
+/// Reserved for Step 2 (agent workspace). Unused in Step 1.
+enum Role {
+  CLIENT
+  AGENT
+  ADMIN
+}
+
+/// Reserved for Step 2 (deal pipeline). Enquiry.stage defaults to NEW.
+enum DealStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  VIEWING_SCHEDULED
+  OFFER_MADE
+  CONTRACT_SIGNED
+  CLOSED
+  LOST
+}
+
+model Community {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  description      String
+  avgPricePerSqft  Float
+  avgRentPerSqft   Float
+  avgGrossYield    Float
+  serviceChargeAvg Float
+  lifestyleTags    String[]
+  schools          String[]
+  metroAccess      String
+  beachProximity   String
+  heroImage        String
+
+  embedding Unsupported("vector(1024)")?
+
+  properties Property[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("community")
+}
+
+model Property {
+  id                   String           @id @default(cuid())
+  refNo                String           @unique
+  title                String
+  description          String
+  listingType          ListingType
+  propertyType         PropertyType
+  communityId          String
+  community            Community        @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  /// Sale price in AED, or ANNUAL rent in AED when listingType is RENT.
+  price                Float
+  beds                 Int
+  baths                Int
+  sizeSqft             Float
+  /// AED per sqft per year.
+  serviceChargePerSqft Float
+  amenities            String[]
+  view                 String
+  furnishing           Furnishing
+  developer            String
+  /// Calendar day, stored midnight UTC. Never render in viewer-local time.
+  handoverDate         DateTime?
+  paymentPlan          String?
+  completionStatus     CompletionStatus
+  dldPermit            String
+  images               String[]
+
+  embedding Unsupported("vector(1024)")?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([communityId])
+  @@index([listingType, propertyType])
+  @@index([price])
+  @@index([deletedAt])
+  @@map("property")
+}
+
+model Broker {
+  id                        String   @id @default(cuid())
+  slug                      String   @unique
+  name                      String
+  photo                     String
+  languages                 String[]
+  /// Community slugs this broker actually deals in.
+  specializationCommunities String[]
+  /// PropertyType values, stored as strings for cheap overlap scoring.
+  specializationTypes       String[]
+  dealsClosed               Int
+  avgDealSize               Float
+  rating                    Float
+  yearsExperience           Int
+  reraBrn                   String
+  bio                       String
+
+  embedding Unsupported("vector(1024)")?
+
+  enquiries Enquiry[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([deletedAt])
+  @@map("broker")
+}
+
+/// A captured discovery session. This IS the lead record that Step 2 builds on.
+model Enquiry {
+  id        String @id @default(cuid())
+  rawQuery  String
+  /// Structured intent extracted by the model, validated against the zod schema.
+  intent    Json
+  /// Ordered Property ids returned, best match first.
+  propertyIds String[]
+  /// Ordered Community ids returned.
+  communityIds String[]
+
+  matchedBrokerId String?
+  matchedBroker   Broker? @relation(fields: [matchedBrokerId], references: [id], onDelete: SetNull)
+
+  // Contact details, only present once the visitor chooses to submit them.
+  name  String?
+  email String?
+  phone String?
+
+  // Step 2 fields. Unused in Step 1.
+  stage   DealStage @default(NEW)
+  agentId String?
+  agent   User?     @relation("AgentEnquiries", fields: [agentId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([stage])
+  @@index([agentId])
+  @@index([createdAt])
+  @@map("enquiry")
+}
+
+/// Reserved for Step 2. No auth is wired in Step 1.
+model User {
+  id    String @id @default(cuid())
+  name  String
+  email String @unique
+  role  Role   @default(CLIENT)
+
+  agentEnquiries Enquiry[] @relation("AgentEnquiries")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("user")
+}
