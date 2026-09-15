@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Majlis
 
-## Getting Started
+AI-guided property discovery for the Dubai market.
 
-First, run the development server:
+Describe what you are looking for in plain English and Majlis returns the areas, the homes
+and the broker that actually fit, with the investment maths computed rather than guessed.
+
+> A *majlis* is the reception room where people gather to talk and decide. The mark is its
+> doorway.
+
+## What it does
+
+Type something like *"AED 3M, a 2-bed I can rent out, family-friendly, near a good school"*
+and the app streams back three linked result sets:
+
+- **Areas** that suit the stated goals, with price per sqft and average gross yield
+- **Homes** ranked against the brief, each with real figures: gross and net yield, annual
+  service charge, DLD transfer fee, Golden Visa eligibility, and off-plan payment schedules
+- **Brokers** matched on genuine specialisation - the communities they actually deal in,
+  property types, languages and track record - with the reasons shown
+
+A written briefing streams underneath, explaining the numbers in the buyer's own terms.
+
+## How the search works
+
+Two readers parse every brief, and the deterministic one wins on anything that must be exact.
+
+A rule-based parser handles budget, bedrooms and buy-versus-rent. A language model handles
+the soft signals it is genuinely better at: lifestyle, phrasing and the summary. This split
+is deliberate, and each half of it came from a real failure:
+
+- Most models read *"a 2-bed I can rent **out**"* as a tenancy. It is plainly a purchase, and
+  getting it wrong puts annual rents next to sale prices in the same list.
+- *"strictly under AED 4M"* must never return AED 4.2M, so a ceiling marked strict is never
+  stretched.
+- *"rental under 5k"* means 5,000 a month. Read as an annual figure it matches nothing in
+  Dubai, because nothing in Dubai is that cheap.
+- Models routinely echo one stated figure into both bounds, turning *"under 5k"* into an
+  exact-price filter. Nobody shopping for a home means "exactly", so an equal pair is read
+  as a ceiling.
+
+Hard constraints bind in SQL, so a result can never violate something the buyer stated. When
+too little matches, the search widens in a fixed order and says what it widened. Property
+type and bedroom count are fair to relax. Turning a purchase into a tenancy is not, and the
+budget is never dropped.
+
+**Every figure shown is computed, never generated.** The model is handed the numbers as facts
+and only explains them.
+
+## Stack
+
+Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, Prisma 7, PostgreSQL, and an
+OpenAI-compatible model endpoint.
+
+## Running it
+
+Requires Docker and Node 22.
 
 ```bash
+docker run -d --name ai-broker-db \
+  -e POSTGRES_USER=broker -e POSTGRES_PASSWORD=broker -e POSTGRES_DB=ai_broker \
+  -p 5433:5432 pgvector/pgvector:pg17
+
+cp .env.example .env      # then fill in DATABASE_URL and the model credentials
+npm install
+npx prisma migrate deploy
+npm run db:seed           # 8 communities, 16 properties, 5 brokers
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Command | Does |
+|---|---|
+| `npm run dev` | Development server on :3000 |
+| `npm run db:seed` | Reseed the curated dataset |
+| `npm run db:studio` | Browse the database |
+| `npm run doctor` | Report which models the current credential can reach |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Plain scripts, no framework:
 
-## Learn More
+```bash
+npx tsx src/lib/__tests__/investment.test.ts     # yields, DLD fee, payment plans
+npx tsx src/lib/__tests__/brokers.test.ts        # specialisation scoring
+npx tsx src/lib/__tests__/intent-rules.test.ts   # brief parsing
+npx tsx src/lib/__tests__/retrieval.test.ts      # needs the database running
+```
 
-To learn more about Next.js, take a look at the following resources:
+`scripts/` holds headless-Chrome checks that measure layout, follow every rendered link, and
+sample the loading UI mid-stream.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The dataset is fictional and built for demonstration. Prices, service charges and yields are
+modelled on the real market; the listings and brokers are not real.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Documentation for contributors, including the rules that must not be broken, is in
+`CLAUDE.md`.
