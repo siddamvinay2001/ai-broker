@@ -96,7 +96,6 @@ async function main() {
     prisma.community.count(), prisma.property.count(), prisma.broker.count(),
   ]);
   console.log(`Seeded ${communities} communities, ${properties} properties, ${brokers} brokers.`);
-  console.log("Embeddings are NOT generated here. Run `npm run embed` once AWS credentials are set.");
 }
 
 main()

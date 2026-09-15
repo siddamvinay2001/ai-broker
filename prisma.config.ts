@@ -7,6 +7,9 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    // Migrations run against the DIRECT endpoint. Neon's pooled connection is
+    // PgBouncer, which does not support the advisory locks and session state
+    // that `prisma migrate` depends on.
+    url: env("DIRECT_URL"),
   },
 });
