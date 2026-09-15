@@ -4,7 +4,7 @@ import { extractIntent } from "@/lib/intent";
 import { parseIntentRules } from "@/lib/intent-rules";
 import { MODEL_SMART, streamText } from "@/lib/llm";
 import { stripDashes } from "@/lib/text";
-import { retrieveCommunities, retrievePropertiesWithFallback, type RetrievedProperty } from "@/lib/retrieval";
+import { selectCommunities, retrievePropertiesWithFallback, type RetrievedProperty } from "@/lib/retrieval";
 import { computeInvestment, computePaymentSchedule } from "@/lib/investment";
 import { rankBrokers, type BrokerProfile } from "@/lib/brokers";
 import type { BuyerIntent } from "@/lib/types/intent";
@@ -72,10 +72,10 @@ export async function POST(req: NextRequest) {
         // The inventory is small enough to filter in SQL and hand the whole
         // surviving set to the model in one prompt. The vector columns stay in
         // the schema as the path to scale, but nothing depends on them yet.
-        const [search, communities] = await Promise.all([
-          retrievePropertiesWithFallback(intent, null, 6),
-          retrieveCommunities(null, 3),
-        ]);
+        // Areas are chosen from the brief AND from the homes we are about to
+        // show, so the two sections cannot contradict each other.
+        const search = await retrievePropertiesWithFallback(intent, null, 6);
+        const communities = await selectCommunities(intent, search.properties, 3);
         const properties = search.properties.map(withFinancials);
 
         send({ type: "communities", communities });
@@ -135,7 +135,7 @@ type NarrativeArgs = {
   query: string;
   intent: BuyerIntent;
   properties: ReturnType<typeof withFinancials>[];
-  communities: Awaited<ReturnType<typeof retrieveCommunities>>;
+  communities: Awaited<ReturnType<typeof selectCommunities>>;
   relaxations: string[];
   exactCount: number;
   send: (event: unknown) => void;

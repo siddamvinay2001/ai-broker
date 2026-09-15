@@ -1,7 +1,7 @@
 import "dotenv/config";
 import assert from "node:assert/strict";
 import prisma from "@/lib/prisma";
-import { retrieveProperties, retrieveCommunities } from "@/lib/retrieval";
+import { retrieveProperties, selectCommunities } from "@/lib/retrieval";
 import { EMPTY_INTENT, type BuyerIntent } from "@/lib/types/intent";
 
 const intent = (o: Partial<BuyerIntent>): BuyerIntent => ({ ...EMPTY_INTENT, ...o });
@@ -31,9 +31,31 @@ async function main() {
   assert.ok(tight.every((p) => p.price <= 880_000), "tight budget leaked");
   console.log(`  budget<=800k BUY -> ${tight.length} results (${tight.map((p) => p.refNo).join(", ")})`);
 
-  const comms = await retrieveCommunities(null, 3);
-  assert.equal(comms.length, 3, "expected 3 communities");
-  console.log(`  communities -> ${comms.map((c) => c.name).join(", ")}`);
+  // Areas must follow the brief, not a fixed yield ranking.
+  const marinaIntent = intent({ communities: ["Dubai Marina"] });
+  const marinaProps = await retrieveProperties(marinaIntent, null, 6);
+  const marinaComms = await selectCommunities(marinaIntent, marinaProps, 3);
+  assert.equal(marinaComms[0].name, "Dubai Marina", `named area must lead, got ${marinaComms[0].name}`);
+  console.log(`  named "Dubai Marina" -> ${marinaComms.map((c) => c.name).join(", ")}`);
+
+  const palmIntent = intent({ communities: ["Palm Jumeirah"] });
+  const palmProps = await retrieveProperties(palmIntent, null, 6);
+  const palmComms = await selectCommunities(palmIntent, palmProps, 3);
+  assert.equal(palmComms[0].name, "Palm Jumeirah", `named area must lead, got ${palmComms[0].name}`);
+  assert.notDeepEqual(
+    marinaComms.map((c) => c.slug),
+    palmComms.map((c) => c.slug),
+    "different briefs must not return identical areas",
+  );
+  console.log(`  named "Palm Jumeirah" -> ${palmComms.map((c) => c.name).join(", ")}`);
+
+  // The lead area should be one the recommended homes are actually in.
+  const yieldIntent = intent({ goals: ["RENTAL_YIELD"], listingType: "BUY", budgetMax: 1_000_000 });
+  const yieldProps = await retrieveProperties(yieldIntent, null, 6);
+  const yieldComms = await selectCommunities(yieldIntent, yieldProps, 3);
+  const propSlugs = new Set(yieldProps.map((p) => p.communitySlug));
+  assert.ok(propSlugs.has(yieldComms[0].slug), "lead area must contain a recommended home");
+  console.log(`  yield brief -> ${yieldComms.map((c) => c.name).join(", ")}`);
 
   console.log("\nretrieval: ALL PASS");
 }

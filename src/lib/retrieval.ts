@@ -145,26 +145,81 @@ export async function retrieveProperties(
   `;
 }
 
-export async function retrieveCommunities(
-  queryVector: string | null,
+/// Areas used to be "top 3 by yield" for every brief, because the vector path
+/// was never taken once embeddings were dropped. That made the section a lie:
+/// it claimed to match the brief while ignoring it, and could name areas that
+/// none of the recommended homes were even in.
+///
+/// Selection is now derived from the brief and from the homes actually being
+/// shown, so the two sections agree with each other.
+export async function selectCommunities(
+  intent: BuyerIntent,
+  recommended: RetrievedProperty[],
   limit = 3,
 ): Promise<RetrievedCommunity[]> {
-  if (!queryVector) {
-    return prisma.$queryRaw<RetrievedCommunity[]>`
-      SELECT c.*, NULL::float8 AS "distance"
-      FROM "community" c
-      ORDER BY c."avgGrossYield" DESC
-      LIMIT ${limit}
-    `;
-  }
-
-  return prisma.$queryRaw<RetrievedCommunity[]>`
-    SELECT c.*, (c."embedding" <=> ${queryVector}::vector)::float8 AS "distance"
-    FROM "community" c
-    WHERE c."embedding" IS NOT NULL
-    ORDER BY c."embedding" <=> ${queryVector}::vector
-    LIMIT ${limit}
+  const all = await prisma.$queryRaw<RetrievedCommunity[]>`
+    SELECT c.*, NULL::float8 AS "distance" FROM "community" c
   `;
+
+  const named = new Set(intent.communities.map((c) => c.toLowerCase()));
+  const wants = intent.lifestyle.map((l) => l.toLowerCase());
+  const chasingYield =
+    intent.goals.includes("RENTAL_YIELD") || intent.goals.includes("INVESTMENT");
+
+  // Earlier recommendations count for more, so the lead area tends to be the
+  // one the best-matching home sits in.
+  const propertyWeight = new Map<string, number>();
+  recommended.forEach((p, index) => {
+    propertyWeight.set(
+      p.communitySlug,
+      (propertyWeight.get(p.communitySlug) ?? 0) + Math.max(6 - index, 1),
+    );
+  });
+
+  const scored = all.map((c) => {
+    let score = 0;
+
+    // The visitor naming an area outranks everything else.
+    if (named.has(c.name.toLowerCase()) || named.has(c.slug.replace(/-/g, " "))) {
+      score += 1000;
+    }
+
+    score += (propertyWeight.get(c.slug) ?? 0) * 25;
+
+    const haystack = [...c.lifestyleTags, ...c.schools, c.beachProximity, c.metroAccess]
+      .join(" ")
+      .toLowerCase();
+    for (const want of wants) {
+      const key = want.replace(/^near an? /, "").trim();
+      if (key && haystack.includes(key)) score += 30;
+    }
+    if (wants.some((w) => w.includes("school")) && c.schools.length > 0) score += 40;
+
+    // Yield only decides things for someone who said they care about it;
+    // otherwise it is a faint tiebreak so ordering stays stable.
+    score += c.avgGrossYield * (chasingYield ? 12 : 1);
+
+    return { community: c, score };
+  });
+
+  const ranked = scored.sort((a, b) => b.score - a.score);
+  const lead = ranked[0];
+  if (!lead || limit <= 1) return ranked.slice(0, limit).map((s) => s.community);
+
+  // Filling the remaining slots by yield alone made them identical for every
+  // brief. Prefer areas that share the lead area's character instead, so the
+  // supporting picks read as "and these are like it" rather than a fixed list.
+  const leadTags = new Set(lead.community.lifestyleTags.map((t) => t.toLowerCase()));
+  const rest = ranked.slice(1).map((entry) => {
+    const overlap = entry.community.lifestyleTags.filter((t) =>
+      leadTags.has(t.toLowerCase()),
+    ).length;
+    return { ...entry, score: entry.score + overlap * 35 };
+  });
+
+  return [lead, ...rest.sort((a, b) => b.score - a.score)]
+    .slice(0, limit)
+    .map((s) => s.community);
 }
 
 /// A brief that matches nothing is a dead end for the visitor, so we relax the
