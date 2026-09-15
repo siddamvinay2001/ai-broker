@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { formatAedCompact } from "@/components/format";
 import type { WireRankedBroker } from "@/components/discover/types";
@@ -18,8 +19,13 @@ export function BrokerCard({ ranked, index }: BrokerCardProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl border border-hairline bg-surface/40 p-6 transition-transform hover:-translate-y-1"
+      className="group rounded-2xl border border-hairline bg-surface/40 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 focus-within:border-accent/50"
     >
+      <Link
+        href={`/broker/${broker.slug}`}
+        className="block rounded-2xl p-6 focus:outline-none"
+        aria-label={`View ${broker.name}'s profile`}
+      >
       <div className="flex items-center gap-4">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-hairline bg-ground-raised">
           {broker.photo && (
@@ -68,6 +74,14 @@ export function BrokerCard({ ranked, index }: BrokerCardProps) {
           ))}
         </ul>
       )}
+
+        <p className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-accent transition-colors group-hover:text-accent-strong">
+          View profile
+          <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5">
+            &rarr;
+          </span>
+        </p>
+      </Link>
     </motion.article>
   );
 }

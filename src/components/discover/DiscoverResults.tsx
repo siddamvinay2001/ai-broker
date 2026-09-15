@@ -9,6 +9,7 @@ import { CommunitiesSection } from "@/components/discover/CommunitiesSection";
 import { PropertiesSection } from "@/components/discover/PropertiesSection";
 import { BrokersSection } from "@/components/discover/BrokersSection";
 import { ErrorNotice } from "@/components/discover/ErrorNotice";
+import { SearchingState } from "@/components/discover/SearchingState";
 import type {
   DiscoverEvent,
   WireCommunity,
@@ -170,6 +171,23 @@ export function DiscoverResults() {
 
   if (state.fatalError) {
     return <ErrorNotice message={state.fatalError} />;
+  }
+
+  // Until the properties land there is nothing to show but empty frames, so
+  // show real pipeline progress instead of three rows of grey boxes.
+  if (state.properties === null) {
+    return (
+      <div className="pb-16">
+        <SearchingState
+          stages={[
+            { label: "Reading your brief", done: state.intent !== null },
+            { label: "Shortlisting areas", done: state.communities !== null },
+            { label: "Searching Dubai inventory", done: state.properties !== null },
+            { label: "Matching your specialist", done: state.brokers !== null },
+          ]}
+        />
+      </div>
+    );
   }
 
   return (

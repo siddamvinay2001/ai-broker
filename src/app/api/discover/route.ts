@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { extractIntent } from "@/lib/intent";
+import { parseIntentRules } from "@/lib/intent-rules";
 import { MODEL_SMART, streamText } from "@/lib/llm";
 import { retrieveCommunities, retrievePropertiesWithFallback, type RetrievedProperty } from "@/lib/retrieval";
 import { computeInvestment, computePaymentSchedule } from "@/lib/investment";
@@ -59,6 +60,11 @@ export async function POST(req: NextRequest) {
         const knownCommunities = await prisma.community.findMany({
           select: { slug: true, name: true },
         });
+        // The rule parse is instant, so show the visitor we have understood
+        // them straight away rather than sitting silent for the model round
+        // trip. The refined reading replaces it a moment later.
+        send({ type: "intent", intent: parseIntentRules(query, knownCommunities) });
+
         const intent: BuyerIntent = await extractIntent(query, knownCommunities);
         send({ type: "intent", intent });
 

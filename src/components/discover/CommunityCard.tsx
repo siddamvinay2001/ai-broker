@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { formatPct } from "@/components/format";
 import type { WireCommunity } from "@/components/discover/types";
@@ -18,8 +19,13 @@ export function CommunityCard({ community, index }: CommunityCardProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="group overflow-hidden rounded-2xl border border-hairline bg-surface/40 transition-transform hover:-translate-y-1"
+      className="group overflow-hidden rounded-2xl border border-hairline bg-surface/40 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 focus-within:border-accent/50"
     >
+      <Link
+        href={`/listings?community=${community.slug}`}
+        className="block focus:outline-none"
+        aria-label={`Browse homes in ${community.name}`}
+      >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-ground-raised">
         {community.heroImage && (
           <Image
@@ -55,7 +61,15 @@ export function CommunityCard({ community, index }: CommunityCardProps) {
             ))}
           </div>
         )}
+
+        <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-accent transition-colors group-hover:text-accent-strong">
+          Browse homes here
+          <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5">
+            &rarr;
+          </span>
+        </p>
       </div>
+      </Link>
     </motion.article>
   );
 }
