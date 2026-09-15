@@ -146,6 +146,22 @@ npx tsx src/lib/__tests__/intent-rules.test.ts
 
 `npx tsc --noEmit` and `npx next build` must both pass before calling work done.
 
+## Commits
+
+**One author per commit: the person making it.** No co-author trailers, no tool attribution,
+no `Generated with` lines. Attribution trailers once leaked a work email and a co-author into
+this history and had to be rewritten out with a force push.
+
+Two things enforce it, and both should stay:
+
+- `.githooks/commit-msg` strips any such trailer at commit time, whoever or whatever commits.
+  It is wired up with `git config core.hooksPath .githooks`, which is local config and does
+  **not** survive a fresh clone - re-run it after cloning.
+- `.claude/settings.local.json` sets `attribution.commit` and `attribution.pr` to `""`, which
+  stops Claude Code adding the trailer in the first place.
+
+Keep commit subjects to a single line unless there is a genuine reason for a body.
+
 ## Conventions
 
 - Results on `/discover` are cached in `sessionStorage` per query. Without it, every

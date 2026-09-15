@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "doctor": "tsx src/lib/__tests__/bedrock.doctor.ts"
+    "doctor": "tsx src/lib/__tests__/bedrock.doctor.ts",
+    "db:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

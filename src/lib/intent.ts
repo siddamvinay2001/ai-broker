@@ -19,6 +19,7 @@ import {
 } from "@/lib/types/intent";
 import { completeJson, MODEL_FAST } from "@/lib/llm";
 import { parseIntentRules, type KnownCommunity } from "@/lib/intent-rules";
+import { stripDashes } from "@/lib/text";
 
 /** AED. Below this, "Golden Visa" talk doesn't actually qualify - used to
  * floor budgetMin when the model tags the GOLDEN_VISA goal. */
@@ -49,7 +50,9 @@ Jumeirah, JVC, Business Bay, Arabian Ranches, Dubai Hills Estate, DIFC, JBR, Al 
 Dubai Silicon Oasis, Jumeirah Village Circle, Emaar Beachfront, Dubai South, Motor City) and \
 put them in "communities" verbatim as the visitor wrote them.
 - "summary" must be exactly one sentence, addressed to the visitor in second person ("You're \
-looking for..."), reflecting their brief back to them.
+looking for..."), stating only what they actually told you. Never ask a question, never ask \
+for more detail, and never list what is missing - a vague brief gets a short summary, which \
+is fine. NEVER use an em dash or en dash anywhere in it; use a comma or a full stop.
 - Leave any field the visitor did not address as null (or an empty array for list fields) - \
 never invent a constraint they didn't state.`;
 
@@ -183,7 +186,7 @@ function mergeIntents(rules: BuyerIntent, model: BuyerIntent): BuyerIntent {
     lifestyle: dedupeLifestyle([...model.lifestyle, ...rules.lifestyle]),
     languagePreference: prefer(rules.languagePreference, model.languagePreference),
     timeline: model.timeline ?? rules.timeline,
-    summary: model.summary?.trim() || rules.summary,
+    summary: stripDashes(model.summary?.trim() || rules.summary),
   };
 }
 

@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { extractIntent } from "@/lib/intent";
 import { parseIntentRules } from "@/lib/intent-rules";
 import { MODEL_SMART, streamText } from "@/lib/llm";
+import { stripDashes } from "@/lib/text";
 import { retrieveCommunities, retrievePropertiesWithFallback, type RetrievedProperty } from "@/lib/retrieval";
 import { computeInvestment, computePaymentSchedule } from "@/lib/investment";
 import { rankBrokers, type BrokerProfile } from "@/lib/brokers";
@@ -213,6 +214,6 @@ async function streamNarrative({ query, intent, properties, communities, relaxat
   ].join("\n");
 
   for await (const delta of streamText({ model: MODEL_SMART, system, user, maxTokens: 1400 })) {
-    send({ type: "narrative_delta", text: delta });
+    send({ type: "narrative_delta", text: stripDashes(delta) });
   }
 }

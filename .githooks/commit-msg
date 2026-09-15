@@ -1,0 +1,23 @@
+#!/bin/sh
+# Strip co-author and tool-attribution trailers from every commit message.
+#
+# Commits here carry one author: the person who made them. Attribution
+# trailers have leaked a work email and a co-author into this history once
+# already and had to be rewritten out with a force push, so this enforces it
+# at the point of commit rather than relying on anyone remembering.
+#
+# Runs for every commit, whoever or whatever makes it.
+
+msg_file="$1"
+[ -f "$msg_file" ] || exit 0
+
+tmp="$msg_file.stripped"
+
+grep -viE '^[[:space:]]*(co-authored-by|signed-off-by[[:space:]]*:[[:space:]]*claude|assisted-by|generated-(with|by))[[:space:]]*:' "$msg_file" \
+  | grep -viE 'generated with \[?claude code\]?' \
+  | grep -viE '^[[:space:]]*🤖' > "$tmp"
+
+# Drop any blank lines left dangling at the end by the removals.
+awk 'NF {p = NR} {lines[NR] = $0} END {for (i = 1; i <= p; i++) print lines[i]}' "$tmp" > "$msg_file"
+rm -f "$tmp"
+exit 0

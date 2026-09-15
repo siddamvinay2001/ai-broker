@@ -89,6 +89,16 @@ npx tsx src/lib/__tests__/retrieval.test.ts      # needs the database running
 `scripts/` holds headless-Chrome checks that measure layout, follow every rendered link, and
 sample the loading UI mid-stream.
 
+## Contributing
+
+After cloning, wire up the commit hook (local git config does not survive a clone):
+
+```bash
+git config core.hooksPath .githooks
+```
+
+It strips co-author and tool-attribution trailers so every commit carries a single author.
+
 ## Notes
 
 The dataset is fictional and built for demonstration. Prices, service charges and yields are
