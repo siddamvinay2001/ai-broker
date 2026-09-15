@@ -127,8 +127,11 @@ export function FiltersBar({ filters, communities }: FiltersBarProps) {
         Price is the sale price for Buy/Off-plan listings and the annual rent for Rent listings.
       </p>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-hairline pt-5">
-        <div className="flex-1 min-w-[160px]">
+      {/* items-end, not items-center: the sort block is a label stacked on a
+          select, so centring floats the buttons in the middle of that stack
+          instead of sitting them on the same line as the input. */}
+      <div className="mt-5 flex flex-wrap items-end gap-3 border-t border-hairline pt-5">
+        <div className="w-full min-w-[160px] sm:w-56">
           <label htmlFor="sort" className={labelClass}>
             Sort by
           </label>
@@ -143,7 +146,7 @@ export function FiltersBar({ filters, communities }: FiltersBarProps) {
 
         <button
           type="submit"
-          className="rounded-xl bg-accent px-6 py-2.5 text-sm font-medium tracking-wide text-ground transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          className="rounded-xl border border-transparent bg-accent px-6 py-2.5 text-sm font-medium tracking-wide text-ground transition-transform hover:scale-[1.02] active:scale-[0.98]"
         >
           Apply filters
         </button>

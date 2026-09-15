@@ -11,7 +11,7 @@ export function ResultsSummary({ count }: ResultsSummaryProps) {
         {count} {count === 1 ? "home matches" : "homes match"}
       </p>
       <Link
-        href="/discover"
+        href="/#discover"
         className="text-sm text-ink-muted underline decoration-hairline-strong underline-offset-4 transition-colors hover:text-accent"
       >
         Not sure? Describe what you want instead

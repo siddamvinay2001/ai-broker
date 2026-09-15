@@ -2,9 +2,10 @@ import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import type { BuyerIntent } from "@/lib/types/intent";
 
-/// A stated budget is a signal, not a hard wall - brokers routinely show a
-/// little above. 10% is the stretch we allow, and never more: showing an
-/// AED 40M penthouse to an AED 3M buyer is exactly the bug we are fixing.
+/// A stated budget is usually a signal rather than a hard wall - brokers
+/// routinely show a little above. 10% is the most we ever stretch, and only
+/// when the visitor left the ceiling soft: "strictly under AED 4M" must never
+/// return AED 4.2M.
 const BUDGET_STRETCH = 1.1;
 
 export type RetrievedProperty = {
@@ -70,7 +71,10 @@ function propertyFilters(intent: BuyerIntent): Prisma.Sql[] {
     );
   }
   if (intent.budgetMax !== null) {
-    clauses.push(Prisma.sql`p."price" <= ${intent.budgetMax * BUDGET_STRETCH}`);
+    const ceiling = intent.budgetStrict
+      ? intent.budgetMax
+      : intent.budgetMax * BUDGET_STRETCH;
+    clauses.push(Prisma.sql`p."price" <= ${ceiling}`);
   }
   if (intent.budgetMin !== null) {
     clauses.push(Prisma.sql`p."price" >= ${intent.budgetMin}`);

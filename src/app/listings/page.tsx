@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
@@ -12,7 +13,7 @@ import { ListingPropertyCard } from "@/components/listings/ListingPropertyCard";
 import { parseFilters, type RawSearchParams } from "@/components/listings/filterLogic";
 
 export const metadata: Metadata = {
-  title: "Listings | Brick & Musk",
+  title: "Listings | Majlis",
   description: "Browse Dubai properties to buy, rent, or reserve off-plan - filters that actually work.",
 };
 
@@ -94,11 +95,19 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
           <div className="mb-8">
             <p className="mb-3 text-xs font-medium tracking-[0.3em] text-accent">LISTINGS</p>
             <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
-              Every filter here actually filters
+              Find your dream home
             </h1>
-            <p className="mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
-              Change any option below and the URL - and the results - change with it. Bookmark it,
-              share it, reload it: what you see is what the filters say.
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
+              Narrow things down by what matters to you. Buying, renting or off-plan,
+              the type of home, the community, how many bedrooms and your price range.
+              Apply the filters and see what fits.
+            </p>
+            <p className="mt-2 max-w-xl text-sm text-ink-faint">
+              Not sure where to start?{" "}
+              <Link href="/#discover" className="text-accent underline-offset-4 hover:underline">
+                Describe what you want instead
+              </Link>{" "}
+              and we will do the narrowing for you.
             </p>
           </div>
 

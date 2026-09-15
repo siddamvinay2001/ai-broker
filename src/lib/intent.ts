@@ -61,6 +61,7 @@ const INTENT_JSON_SCHEMA: Record<string, unknown> = {
   properties: {
     budgetMin: { type: ["number", "null"] },
     budgetMax: { type: ["number", "null"] },
+    budgetStrict: { type: "boolean" },
     listingType: { type: ["string", "null"], enum: [...LISTING_TYPES, null] },
     propertyTypes: {
       type: "array",
@@ -78,6 +79,7 @@ const INTENT_JSON_SCHEMA: Record<string, unknown> = {
   required: [
     "budgetMin",
     "budgetMax",
+    "budgetStrict",
     "listingType",
     "propertyTypes",
     "bedsMin",
@@ -99,6 +101,9 @@ const INTENT_JSON_SCHEMA: Record<string, unknown> = {
 function repairRawIntent(raw: unknown): unknown {
   if (typeof raw !== "object" || raw === null) return raw;
   const data = raw as Record<string, unknown>;
+
+  // A model that omits or mistypes the flag must not fail validation over it.
+  if (typeof data.budgetStrict !== "boolean") data.budgetStrict = false;
 
   // Missing/malformed list fields default to [] rather than fail validation.
   for (const key of ["propertyTypes", "communities", "goals", "lifestyle"] as const) {
@@ -160,9 +165,15 @@ function mergeIntents(rules: BuyerIntent, model: BuyerIntent): BuyerIntent {
   // If the rules resolved either bound, their reading of the budget stands.
   const rulesHaveBudget = rules.budgetMin !== null || rules.budgetMax !== null;
 
+  // Models routinely echo one stated figure into BOTH bounds, turning "under
+  // 5k" into an exact-price filter that matches nothing. Nobody shopping for
+  // a home means "exactly this price", so an equal pair is read as a ceiling.
+  const modelMin = model.budgetMin === model.budgetMax ? null : model.budgetMin;
+
   return {
-    budgetMin: rulesHaveBudget ? rules.budgetMin : model.budgetMin,
+    budgetMin: rulesHaveBudget ? rules.budgetMin : modelMin,
     budgetMax: rulesHaveBudget ? rules.budgetMax : model.budgetMax,
+    budgetStrict: rules.budgetStrict || model.budgetStrict,
     listingType: prefer(rules.listingType, model.listingType),
     bedsMin: prefer(rules.bedsMin, model.bedsMin),
     bedsMax: prefer(rules.bedsMax, model.bedsMax),

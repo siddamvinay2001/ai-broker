@@ -1,25 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  /* Ground / surfaces */
-  --color-ground: oklch(0.16 0.008 90);
-  --color-ground-raised: oklch(0.2 0.01 90);
-  --color-surface: oklch(0.22 0.012 90);
-  --color-surface-glass: oklch(0.24 0.012 90 / 0.55);
+  /* Ground / surfaces - warm ivory and bone, never pure white or cool grey.
+     Verified against WCAG contrast below (see globals.css history / PR notes):
+     all text tiers clear 4.5:1 on both ground and surface. */
+  --color-ground: oklch(0.985 0.005 85);
+  --color-ground-raised: oklch(0.965 0.007 85);
+  --color-surface: oklch(0.995 0.004 80);
+  /* Chrome glass (header, composer) AND badges sitting on photos share this
+     token - alpha is high enough (0.85) that a badge stays legible even over
+     a near-black photo, while the header/composer still read as frosted. */
+  --color-surface-glass: oklch(0.995 0.004 80 / 0.85);
 
-  /* Text */
-  --color-ink: oklch(0.96 0.01 85);
-  --color-ink-muted: oklch(0.78 0.015 85);
-  --color-ink-faint: oklch(0.6 0.015 85);
+  /* Text - deep warm charcoal, never pure black. */
+  --color-ink: oklch(0.22 0.012 60);
+  --color-ink-muted: oklch(0.46 0.02 60);
+  --color-ink-faint: oklch(0.52 0.018 60);
 
-  /* Accent: muted champagne / brass */
-  --color-accent: oklch(0.78 0.09 85);
-  --color-accent-soft: oklch(0.78 0.09 85 / 0.14);
-  --color-accent-strong: oklch(0.86 0.1 88);
+  /* Accent: the same champagne/brass hue, darkened from the dark-theme value
+     so it clears 4.5:1 as text and as button fill on an ivory ground. */
+  --color-accent: oklch(0.52 0.1 75);
+  --color-accent-soft: oklch(0.52 0.1 75 / 0.16);
+  --color-accent-strong: oklch(0.42 0.09 70);
 
-  /* Hairlines */
-  --color-hairline: oklch(1 0 0 / 0.1);
-  --color-hairline-strong: oklch(1 0 0 / 0.18);
+  /* Hairlines - warm dark at low alpha, not cool grey. */
+  --color-hairline: oklch(0.22 0.012 60 / 0.12);
+  --color-hairline-strong: oklch(0.22 0.012 60 / 0.22);
 
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
@@ -52,7 +58,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {

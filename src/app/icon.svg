@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#1A1714"/>
+  <!-- A pointed arch: the doorway of a majlis, the room where people gather. -->
+  <path d="M9 25.5V15.2C9 10.4 12 6.3 16 4.2c4 2.1 7 6.2 7 11v10.3"
+        fill="none" stroke="#C9A227" stroke-width="2.6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M7.5 26.8h17" stroke="#C9A227" stroke-width="2.6" stroke-linecap="round"/>
+</svg>

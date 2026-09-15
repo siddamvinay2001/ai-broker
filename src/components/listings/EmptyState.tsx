@@ -15,7 +15,7 @@ export function EmptyState() {
           Clear filters
         </Link>
         <Link
-          href="/discover"
+          href="/#discover"
           className="rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-ground transition-transform hover:scale-[1.02] active:scale-[0.98]"
         >
           Describe what you want instead

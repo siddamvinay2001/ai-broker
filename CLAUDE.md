@@ -1,7 +1,16 @@
-# Brick & Musk - AI Property Discovery
+# Majlis - AI Property Discovery
 
-A POC built for an AI Engineer interview with [Brick & Musk](https://www.brickandmusk.com),
-a RERA-licensed Dubai luxury/investment brokerage (RERA 48328, License 1458200).
+A POC built for an AI Engineer interview with a Dubai luxury/investment brokerage
+(brickandmusk.com).
+
+**The product is deliberately branded "Majlis", not as the client.** It ships under its own
+name so the demo reads as a product we built rather than a mock-up of their site, and so
+none of their real branding or licence numbers appear under work that is not theirs. Do not
+reintroduce the client's name, logo, or RERA/licence numbers into the UI.
+
+A majlis is the reception room where people gather to talk and decide - which is what a
+brokerage does. The logo is a pointed arch (its doorway): `src/app/icon.svg` for the
+favicon, `src/components/Logo.tsx` for `LogoMark` and `Wordmark`.
 
 A buyer describes what they want in plain English; the app returns matched **areas**,
 **properties** (with real computed investment figures) and **brokers** (matched on genuine
@@ -9,10 +18,18 @@ specialization), with a streamed explanation tying it all back to their brief.
 
 ## Why this exists
 
-Their live site has a demonstrably broken search: `/listing?q=Business+Bay` and
+The client's live site has a demonstrably broken search: `/listing?q=Business+Bay` and
 `/listing?class=villas&type=buy` return **byte-identical 28,451-byte responses**, and the
 listing grid never renders past `"Initializing..."`. Our `/listings` page is the direct
 rebuttal - its filters are verified against ground truth on ten combinations.
+
+## Design
+
+**Warm light, single theme, no toggle.** Ivory and bone grounds, deep warm charcoal text,
+one champagne accent, generous whitespace, big photography. Think a luxury property
+magazine, not a SaaS dashboard - and warm, never cool greys or pure white. Tokens live on
+`:root` in `globals.css` and map into `@theme inline`; Tailwind v4 with no config file.
+Display face is a serif, body is a grotesk.
 
 ## Stack
 
@@ -131,12 +148,16 @@ npx tsx src/lib/__tests__/intent-rules.test.ts
 
 ## Conventions
 
+- Results on `/discover` are cached in `sessionStorage` per query. Without it, every
+  back-navigation remounts the page, re-POSTs, and writes **another `Enquiry` row** -
+  and `Enquiry` is the lead record, so one buyer browsing four listings reached an
+  agent's pipeline as five leads. Cache as soon as `properties` arrive, not once the
+  narrative settles: visitors click a listing mid-narrative.
 - Server Actions under `src/lib/server/` return the shared `ActionResult<T>` from
   `src/lib/types/action-result.ts`. Import it; never redeclare it.
 - Comment *why*, not *what*. Small functions, early returns.
 - No `any`, no `@ts-ignore`.
-- Compose UI from the existing tokens in `globals.css`. Dark-first, Fraunces display over
-  Inter body, one champagne accent. No component library.
+- Compose UI from the existing tokens in `globals.css`. No component library.
 - Responsive down to 390px, no horizontal scroll.
 
 ## State and next steps

@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { humanizeEnumValue, humanizeSlug } from "@/components/format";
+import { CallbackButton } from "@/components/broker/CallbackButton";
 
 type BrokerHeroProps = {
   name: string;
@@ -74,12 +74,7 @@ export function BrokerHero(props: BrokerHeroProps) {
           </div>
         )}
 
-        <Link
-          href="/discover"
-          className="mt-8 inline-flex items-center justify-center rounded-2xl bg-accent px-6 py-3 text-sm font-medium tracking-wide text-ground transition-transform hover:scale-[1.02] active:scale-[0.98]"
-        >
-          Request a callback
-        </Link>
+        <CallbackButton brokerName={props.name} />
       </div>
     </div>
   );

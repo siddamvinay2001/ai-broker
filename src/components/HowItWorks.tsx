@@ -27,40 +27,67 @@ export function HowItWorks() {
   return (
     <section className="border-t border-hairline">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-12 text-center font-display text-2xl tracking-tight text-ink sm:mb-16 sm:text-3xl"
+          className="mb-14 sm:mb-20"
         >
-          How it works
-        </motion.h2>
+          <h2 className="font-display text-4xl tracking-tight text-ink sm:text-5xl">
+            How it works
+          </h2>
+          <p className="mt-3 max-w-md text-base text-ink-muted sm:text-lg">
+            Three steps between a brief and a broker who already knows the answer.
+          </p>
+          <div className="mt-8 h-px w-full bg-hairline" />
+        </motion.div>
 
-        <div className="grid gap-8 sm:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 sm:divide-x sm:divide-hairline">
           {STEPS.map((step, index) => (
-            <motion.div
+            <div
               key={step.number}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.12,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="rounded-2xl border border-hairline bg-surface/40 p-6 transition-transform hover:-translate-y-1"
+              className={`sm:px-8 sm:first:pl-0 sm:last:pr-0 ${
+                index > 0
+                  ? "mt-10 border-t border-hairline pt-10 sm:mt-0 sm:border-t-0 sm:pt-0"
+                  : ""
+              }`}
             >
-              <span className="font-display text-sm text-accent">
+              <motion.span
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.15,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                aria-hidden
+                className="block font-display text-6xl leading-none tracking-tight sm:text-7xl"
+                style={{ color: "oklch(0.6 0.11 75)" }}
+              >
                 {step.number}
-              </span>
-              <h3 className="mt-4 font-display text-lg text-ink">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                {step.description}
-              </p>
-            </motion.div>
+              </motion.span>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.15 + 0.1,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="mt-3"
+              >
+                <h3 className="font-display text-xl tracking-tight text-ink sm:text-2xl">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-base leading-relaxed text-ink-muted sm:text-lg">
+                  {step.description}
+                </p>
+              </motion.div>
+            </div>
           ))}
         </div>
       </div>

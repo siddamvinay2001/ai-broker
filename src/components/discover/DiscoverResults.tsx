@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useReducer } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { IntentSummary } from "@/components/discover/IntentSummary";
 import { NarrativeSection, type NarrativeStatus } from "@/components/discover/NarrativeSection";
@@ -42,6 +42,7 @@ const initialState: State = {
 
 type Action =
   | DiscoverEvent
+  | { type: "restore"; state: State }
   | { type: "fatal"; message: string }
   | { type: "finalize" };
 
@@ -66,6 +67,8 @@ function reducer(state: State, action: Action): State {
       };
     case "error":
       return { ...state, streamError: action.message };
+    case "restore":
+      return action.state;
     case "fatal":
       return { ...state, fatalError: action.message };
     case "finalize":
@@ -86,13 +89,79 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+/// Results are cached per query for the tab's lifetime. Without this, every
+/// back-navigation from a property remounts this component and re-POSTs, which
+/// costs a model call, makes the visitor wait again, and - worst - writes
+/// another Enquiry row. Enquiry IS the lead record, so one buyer browsing four
+/// listings would reach an agent's pipeline as five separate leads.
+const CACHE_PREFIX = "majlis:discover:";
+
+function cacheKey(query: string) {
+  return CACHE_PREFIX + query;
+}
+
+function readCache(query: string): State | null {
+  try {
+    const raw = sessionStorage.getItem(cacheKey(query));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as State;
+    if (parsed.properties === null) return null;
+    // A stream cannot be resumed, so a narrative caught mid-flight is
+    // presented as whatever text we managed to capture.
+    if (parsed.narrativeStatus === "streaming") {
+      parsed.narrativeStatus = parsed.narrative.trim() ? "done" : "unavailable";
+    }
+    if (parsed.narrativeStatus === "pending") {
+      parsed.narrativeStatus = "unavailable";
+    }
+    return parsed;
+  } catch {
+    // Private browsing, disabled storage, or bad JSON - just re-fetch.
+    return null;
+  }
+}
+
+function writeCache(query: string, state: State) {
+  try {
+    sessionStorage.setItem(cacheKey(query), JSON.stringify(state));
+  } catch {
+    // Storage full or unavailable; the page still works without the cache.
+  }
+}
+
 export function DiscoverResults() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const query = (searchParams.get("q") ?? "").trim();
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // Arriving here with no brief is not a failure - it happens whenever one
+  // of the "describe what you want" links is followed without a query.
+  // Send the visitor straight to the composer instead of showing an error
+  // for doing nothing wrong. `replace`, not `push`, so back doesn't loop here.
+  useEffect(() => {
+    if (!query) router.replace("/#discover");
+  }, [query, router]);
+
+  // Cache as soon as the results exist, not once the narrative finishes -
+  // visitors routinely click a listing mid-narrative, and waiting for the
+  // stream to settle meant nothing was ever cached for the common path.
+  const worthCaching = state.properties !== null && state.fatalError === null;
+
+  useEffect(() => {
+    if (query && worthCaching) writeCache(query, state);
+  }, [query, worthCaching, state]);
+
   useEffect(() => {
     if (!query) return;
+
+    // Restore a completed run instead of paying for it twice.
+    const cached = readCache(query);
+    if (cached) {
+      dispatch({ type: "restore", state: cached });
+      return;
+    }
+
     const controller = new AbortController();
 
     async function run() {
@@ -164,9 +233,9 @@ export function DiscoverResults() {
   }, [query]);
 
   if (!query) {
-    return (
-      <ErrorNotice message="Tell us what you're looking for first - head back and describe your brief." />
-    );
+    // The redirect effect above is already navigating away; render nothing
+    // rather than flash an error the visitor didn't cause.
+    return null;
   }
 
   if (state.fatalError) {

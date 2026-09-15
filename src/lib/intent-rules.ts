@@ -144,7 +144,9 @@ export function parseIntentRules(query: string, known: KnownCommunity[] = []): B
   // Order matters: "rent it out" is a purchase, not a tenancy.
   const investorLet = /\b(rent (it |them )?out|buy to let|rental income|yield|roi|return on investment)\b/.test(q);
   const offPlan = /\b(off[-\s]?plan|payment plan|before handover|under construction|pre[-\s]?launch)\b/.test(q);
-  const wantsTenancy = /\b(to rent|for rent|looking to rent|renting|lease|leasing|tenant|rental for me)\b/.test(q) && !investorLet;
+  const wantsTenancy =
+    /\b(to rent|for rent|looking to rent|renting|rentals?|lease|leasing|tenant)\b/.test(q) &&
+    !investorLet;
 
   let listingType: BuyerIntent["listingType"] = null;
   if (offPlan) listingType = "OFFPLAN";
@@ -159,17 +161,36 @@ export function parseIntentRules(query: string, known: KnownCommunity[] = []): B
   // no stated verb is a purchase, not a tenancy.
   const PLAUSIBLE_MAX_ANNUAL_RENT = 1_000_000;
 
+  // The cheapest studio in Dubai still runs tens of thousands a year, so a
+  // rental budget quoted below this is a MONTHLY figure - "rental under 5k"
+  // means 5k a month, never 5k a year. Without this the search filters on an
+  // annual price that nothing in the market could ever match.
+  const IMPLAUSIBLE_ANNUAL_RENT = 25_000;
+
   // A monthly figure is a rent quote; our prices are annual.
-  if (budget.monthly) {
+  let monthly = budget.monthly;
+  if (monthly && listingType === null) listingType = "RENT";
+
+  // ... and so is a rental figure too small to be a year's rent, even when
+  // the visitor never wrote "per month".
+  if (!monthly && listingType === "RENT") {
+    const stated = budgetMax ?? budgetMin;
+    if (stated !== null && stated < IMPLAUSIBLE_ANNUAL_RENT) monthly = true;
+  }
+
+  if (monthly) {
     if (budgetMin !== null) budgetMin *= 12;
     if (budgetMax !== null) budgetMax *= 12;
-    if (listingType === null) listingType = "RENT";
   }
 
   if (listingType === null && !budget.monthly) {
     const ceiling = budgetMax ?? budgetMin;
     if (ceiling !== null && ceiling > PLAUSIBLE_MAX_ANNUAL_RENT) listingType = "BUY";
   }
+
+  // "strictly under 4M" means 4M, not 4.4M. Honour an explicit hard ceiling.
+  const budgetStrict =
+    /\b(strictly|exactly|hard (?:limit|cap|ceiling)|absolute (?:max|limit)|no more than|not a dirham over|firm|cannot go (?:above|over)|max out at)\b/.test(q);
 
   const goals: BuyerIntent["goals"] = [];
   const goldenVisa = /\bgolden\s?visa\b/.test(q);
@@ -196,6 +217,7 @@ export function parseIntentRules(query: string, known: KnownCommunity[] = []): B
     ...EMPTY_INTENT,
     budgetMin,
     budgetMax,
+    budgetStrict,
     listingType,
     propertyTypes,
     bedsMin: beds.min,

@@ -40,7 +40,7 @@ export function DiscoveryForm({ query, onQueryChange }: DiscoveryFormProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative mx-auto w-full max-w-2xl"
+      className="group relative mx-auto w-full max-w-2xl scroll-mt-24"
     >
       {/* Accent bloom behind the composer, lit on focus. */}
       <div
@@ -48,7 +48,7 @@ export function DiscoveryForm({ query, onQueryChange }: DiscoveryFormProps) {
         className="pointer-events-none absolute -inset-px rounded-[28px] bg-[radial-gradient(60%_120%_at_50%_0%,var(--color-accent-soft),transparent_70%)] opacity-0 blur-md transition-opacity duration-500 group-focus-within:opacity-100"
       />
 
-      <div className="relative overflow-hidden rounded-[28px] border border-hairline-strong bg-surface-glass shadow-[0_24px_70px_-24px_rgba(0,0,0,0.75)] backdrop-blur-xl transition-colors duration-300 focus-within:border-accent/45">
+      <div className="relative overflow-hidden rounded-[28px] border border-hairline-strong bg-surface-glass shadow-[0_20px_50px_-24px_rgba(64,44,24,0.18)] backdrop-blur-xl transition-colors duration-300 focus-within:border-accent/45">
         <label htmlFor="brief" className="sr-only">
           Describe your budget, goals, and how you want to live
         </label>
@@ -69,10 +69,10 @@ export function DiscoveryForm({ query, onQueryChange }: DiscoveryFormProps) {
         <div className="flex items-center justify-between gap-3 border-t border-hairline px-3 py-3 sm:px-4">
           <p className="hidden text-xs text-ink-faint sm:block">
             Press{" "}
-            <kbd className="rounded border border-hairline bg-surface/70 px-1.5 py-0.5 font-sans text-[11px] text-ink-muted">
+            <kbd className="rounded border border-hairline bg-ground-raised px-1.5 py-0.5 font-sans text-[11px] text-ink-muted">
               ⌘
             </kbd>{" "}
-            <kbd className="rounded border border-hairline bg-surface/70 px-1.5 py-0.5 font-sans text-[11px] text-ink-muted">
+            <kbd className="rounded border border-hairline bg-ground-raised px-1.5 py-0.5 font-sans text-[11px] text-ink-muted">
               ↵
             </kbd>{" "}
             to search
@@ -82,7 +82,7 @@ export function DiscoveryForm({ query, onQueryChange }: DiscoveryFormProps) {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium tracking-wide text-ground transition-all duration-200 hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-accent"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium tracking-wide text-ground transition-all duration-200 hover:bg-accent-strong disabled:cursor-not-allowed disabled:bg-ground-raised disabled:text-ink-faint disabled:hover:bg-ground-raised"
           >
             Find my home
             <svg

@@ -19,9 +19,9 @@ async function getBroker(slug: string) {
 export async function generateMetadata({ params }: BrokerPageProps): Promise<Metadata> {
   const { slug } = await params;
   const broker = await getBroker(slug);
-  if (!broker) return { title: "Broker not found | Brick & Musk" };
+  if (!broker) return { title: "Broker not found | Majlis" };
   return {
-    title: `${broker.name} | Brick & Musk`,
+    title: `${broker.name} | Majlis`,
     description: broker.bio.slice(0, 160),
   };
 }

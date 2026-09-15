@@ -8,6 +8,7 @@ export type WireListingType = "BUY" | "RENT" | "OFFPLAN";
 export type WireIntent = {
   budgetMin: number | null;
   budgetMax: number | null;
+  budgetStrict: boolean;
   listingType: WireListingType | null;
   propertyTypes: string[];
   bedsMin: number | null;

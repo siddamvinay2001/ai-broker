@@ -28,6 +28,10 @@ export const BuyerIntentSchema = z.object({
   /// AED. For RENT these bound the ANNUAL rent.
   budgetMin: z.number().nullable(),
   budgetMax: z.number().nullable(),
+  /// True when the visitor made the ceiling absolute ("strictly under 4M",
+  /// "hard limit", "not a dirham over"). A soft budget is shown a little
+  /// above; a strict one never is.
+  budgetStrict: z.boolean(),
   listingType: z.enum(LISTING_TYPES).nullable(),
   propertyTypes: z.array(z.enum(PROPERTY_TYPES)),
   bedsMin: z.number().int().nullable(),
@@ -52,6 +56,7 @@ export type BuyerIntent = z.infer<typeof BuyerIntentSchema>;
 export const EMPTY_INTENT: BuyerIntent = {
   budgetMin: null,
   budgetMax: null,
+  budgetStrict: false,
   listingType: null,
   propertyTypes: [],
   bedsMin: null,

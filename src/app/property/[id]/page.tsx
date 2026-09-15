@@ -33,9 +33,9 @@ async function getProperty(id: string) {
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { id } = await params;
   const property = await getProperty(id);
-  if (!property) return { title: "Property not found | Brick & Musk" };
+  if (!property) return { title: "Property not found | Majlis" };
   return {
-    title: `${property.title} | Brick & Musk`,
+    title: `${property.title} | Majlis`,
     description: property.description.slice(0, 160),
   };
 }
@@ -71,7 +71,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-6 py-10 sm:px-8 sm:py-14">
           <Link
-            href="/discover"
+            href="/#discover"
             className="mb-6 inline-flex items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-accent"
           >
             &larr; Back to results

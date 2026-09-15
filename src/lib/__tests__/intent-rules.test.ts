@@ -55,6 +55,24 @@ check("trailing plus is a floor, not a ceiling", () => {
   assert.equal(r2.budgetMax, null);
 });
 
+check("'rental' alone reads as a tenancy", () => {
+  assert.equal(p("rental under 5k aed").listingType, "RENT");
+  assert.equal(p("looking for a rental in JVC").listingType, "RENT");
+  // "rent it OUT" is still a purchase, not a tenancy.
+  assert.equal(p("2-bed I can rent out").listingType, "BUY");
+});
+
+check("a rental budget too small to be a year's rent is monthly", () => {
+  const r = p("rental under 5k aed");
+  assert.equal(r.listingType, "RENT");
+  assert.equal(r.budgetMax, 60_000, `5k/month should become AED 60,000/yr, got ${r.budgetMax}`);
+  assert.equal(r.budgetMin, null, "a ceiling must not become an exact-price filter");
+
+  // A figure that IS plausible as annual rent is left alone.
+  const annual = p("rental under 120k aed");
+  assert.equal(annual.budgetMax, 120_000, "120k is a plausible annual rent, do not multiply");
+});
+
 check("studio maps to zero bedrooms", () => {
   const r = p("cheap studio in JVC under 700k");
   assert.equal(r.bedsMin, 0);

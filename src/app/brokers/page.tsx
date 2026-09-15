@@ -6,8 +6,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { BrokerListCard } from "@/components/brokers/BrokerListCard";
 
 export const metadata: Metadata = {
-  title: "Our Brokers | Brick & Musk",
-  description: "Meet the RERA-licensed specialists behind Brick & Musk's Dubai portfolio.",
+  title: "Our Brokers | Majlis",
+  description: "Meet the specialists behind Majlis's Dubai portfolio.",
 };
 
 export default async function BrokersPage() {
