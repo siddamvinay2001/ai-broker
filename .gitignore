@@ -43,3 +43,6 @@ next-env.d.ts
 
 # Contains a plaintext API key
 testmoed.js
+
+# Template is safe to track; real secrets live in .env only
+!.env.example

@@ -13,8 +13,6 @@
     "doctor": "tsx src/lib/__tests__/bedrock.doctor.ts"
   },
   "dependencies": {
-    "@anthropic-ai/bedrock-sdk": "^0.33.5",
-    "@aws-sdk/client-bedrock-runtime": "^3.1132.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "motion": "^13.3.0",
